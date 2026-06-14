@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Liquid Glass Home</title>
+    <link rel="icon" href="assets/brandimage.png" type="image/png">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -21,19 +22,13 @@
                 <p>Welcome back! Here is your music library.</p>
             </div>
             <div class="header-right-controls">
-                <button id="play-all-btn" class="pill-btn secondary">
-                    <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
-                    Play All
-                </button>
-                <button id="shuffle-btn" class="pill-btn primary">
-                    <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>
-                    Shuffle
-                </button>
                 <button id="toggle-queue-btn" class="pill-btn secondary icon-only" title="View Queue">
                     <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M4 6h16v2H4zm0 5h16v2H4zm0 5h11v2H4zm14 0v-5h2v5zm-1 5l2-3 2 3z"/></svg>
                 </button>
                 <button id="toggle-settings-btn" class="pill-btn secondary icon-only" title="Settings">
-                    <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3-1.07-3-3.5s1.07-3.5 3-3.5 3 1.07 3 3.5-1.07 3.5-3 3.5z"/></svg>
+                    <svg viewBox="0 0 24 24" width="18" height="18">
+                        <path fill="currentColor" d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+                    </svg>
                 </button>
             </div>
         </header>
@@ -42,9 +37,19 @@
             <main class="main-content">
                 
                 <div id="dashboard-view">
+                    
+                    <section class="search-section">
+                        <div class="search-wrapper">
+                            <svg class="search-icon" viewBox="0 0 24 24" width="18" height="18">
+                                <path fill="currentColor" d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                            </svg>
+                            <input type="text" id="library-search-input" placeholder="Search for tracks, artists..." autocomplete="off">
+                        </div>
+                    </section>
+
                     <section class="grid-section">
-                        <h3>All Tracks</h3>
-                        <div id="music-grid" class="music-grid">
+                        <h3 id="tracks-section-title">Recommended for Today</h3>
+                        <div id="music-grid" class="music-grid ranked-recommendations-layout">
                             </div>
                     </section>
 
@@ -57,6 +62,16 @@
                         </div>
                         <div id="playlists-grid" class="music-grid">
                             </div>
+                    </section>
+
+                    <hr class="section-divider">
+
+                    <section class="grid-section artists-section">
+                        <div class="section-header-row">
+                            <h3>Artists</h3>
+                            <span class="section-subtitle">Browse by artist</span>
+                        </div>
+                        <div id="artists-grid" class="music-grid"></div>
                     </section>
                 </div>
 
@@ -102,6 +117,42 @@
                         </div>
                         <div id="playlist-tracks-list" class="table-body">
                             </div>
+                    </div>
+                </div>
+
+                <div id="artist-detail-view" class="playlist-detail-view hidden-view">
+                    <div class="playlist-detail-header">
+                        <button id="artist-back-btn" class="back-text-btn">
+                            <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                            Back to Library
+                        </button>
+                        <div class="playlist-header-main">
+                            <div class="p-detail-art-wrapper">
+                                <img id="artist-detail-art" src="https://placehold.co/500x500/282828/aaaaaa?text=Artist" alt="Artist Artwork">
+                            </div>
+                            <div class="p-header-text">
+                                <span class="p-badge">ARTIST</span>
+                                <h2 id="artist-detail-title">Artist Name</h2>
+                                <p id="artist-detail-meta">0 songs</p>
+                                <div class="p-action-row">
+                                    <button id="a-play-btn" class="pill-btn primary">
+                                        <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M8 5v14l11-7z"/></svg> Play All
+                                    </button>
+                                    <button id="a-shuffle-btn" class="pill-btn secondary">
+                                        <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg> Shuffle
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="playlist-tracks-table">
+                        <div class="table-header-row">
+                            <span class="col-num">#</span>
+                            <span class="col-title">Title</span>
+                            <span class="col-artist">Artist</span>
+                            <span class="col-actions"></span>
+                        </div>
+                        <div id="artist-tracks-list" class="table-body"></div>
                     </div>
                 </div>
 
@@ -181,8 +232,8 @@
 
         <footer id="player-dock" class="player-dock hidden">
             <div class="dock-content">
-                <div id="dock-meta-trigger" class="dock-track-info clickable-trigger" title="Expand view">
-                    <img id="album-art" src="https://placehold.co/50x50/282828/aaaaaa?text=" alt="Art">
+                <div class="dock-track-info">
+                    <img id="album-art" class="clickable-trigger" title="Expand view" src="https://placehold.co/50x50/282828/aaaaaa?text=" alt="Art">
                     <div class="dock-text">
                         <div class="title-row">
                             <span id="song-title">Song Title</span>
@@ -259,18 +310,17 @@
     </div>
 
     <script>
-        let currentPlaylist = [];
+        let currentPlaylist = []; 
+        let recommendedPlaylist = []; 
         let playbackQueue = []; 
         let currentQueueIndex = -1;
         let playlists = JSON.parse(localStorage.getItem('glass_playlists')) || {};
 
-        // ENGINE APP STATE CONFIGURATIONS
         let crossfadeEnabled = localStorage.getItem('glass_cf_enabled') === 'true';
         let crossfadeDuration = parseInt(localStorage.getItem('glass_cf_duration')) || 6;
         let isTransitioning = false;
         let preloadedIndex = -1; 
 
-        // DUAL ENGINE ROUTING SELECTION
         const p1 = document.getElementById('audio-player-1');
         const p2 = document.getElementById('audio-player-2');
         let player = p1; 
@@ -283,14 +333,12 @@
         const pauseIcon = document.getElementById('pause-icon');
         const prevBtn = document.getElementById('prev-btn');
         const nextBtn = document.getElementById('next-btn');
-        const playAllBtn = document.getElementById('play-all-btn');
-        const shuffleBtn = document.getElementById('shuffle-btn');
         const progressContainer = document.getElementById('progress-container');
         const progressFill = document.getElementById('progress-fill');
         const timeCurrent = document.getElementById('time-current');
         const timeDuration = document.getElementById('time-duration');
         
-        const dockMetaTrigger = document.getElementById('dock-meta-trigger');
+        const albumArt = document.getElementById('album-art');
         const fullscreenOverlay = document.getElementById('fullscreen-overlay');
         const closeOverlayBtn = document.getElementById('close-overlay-btn');
         const dockControls = document.getElementById('dock-controls');
@@ -327,6 +375,30 @@
         const exportBtn = document.getElementById('export-playlists-btn');
         const importTriggerBtn = document.getElementById('import-trigger-btn');
         const importFileInput = document.getElementById('import-file-input');
+        const artistsGrid = document.getElementById('artists-grid');
+        const artistDetailView = document.getElementById('artist-detail-view');
+        const artistBackBtn = document.getElementById('artist-back-btn');
+        const artistDetailTitle = document.getElementById('artist-detail-title');
+        const artistDetailMeta = document.getElementById('artist-detail-meta');
+        const artistDetailArt = document.getElementById('artist-detail-art');
+        const artistTracksList = document.getElementById('artist-tracks-list');
+        const artistPlayBtn = document.getElementById('a-play-btn');
+        const artistShuffleBtn = document.getElementById('a-shuffle-btn');
+        const songArtistLabel = document.getElementById('song-artist');
+        const fsSongArtistLabel = document.getElementById('fs-song-artist');
+        
+        const searchInput = document.getElementById('library-search-input');
+        const tracksSectionTitle = document.getElementById('tracks-section-title');
+
+        [songArtistLabel, fsSongArtistLabel].forEach(element => {
+            if (!element) return;
+            element.classList.add('artist-link');
+            element.addEventListener('click', (event) => {
+                event.stopPropagation();
+                const artistName = element.innerText.trim();
+                if (artistName) openArtistPage(artistName);
+            });
+        });
 
         let activePlaylistName = null;
 
@@ -393,6 +465,62 @@
             modalInput.focus();
         }
 
+        function openArtistPage(artistName) {
+            const artistTracks = currentPlaylist.filter(track => track.artist === artistName);
+            artistDetailTitle.innerText = artistName;
+            artistDetailMeta.innerText = `${artistTracks.length} ${artistTracks.length === 1 ? 'song' : 'songs'}`;
+            artistDetailArt.src = getArtistArtworkUrlByArtist(artistName);
+            artistTracksList.innerHTML = "";
+
+            artistTracks.forEach((song, index) => {
+                const row = document.createElement('div');
+                row.className = 'table-row';
+                row.dataset.id = song.id;
+                row.innerHTML = `
+                    <span class="col-num">${index + 1}</span>
+                    <span class="col-title font-highlight">${song.title}</span>
+                    <span class="col-artist">${song.artist}</span>
+                    <span class="col-actions">
+                        <button class="table-action-btn" onclick="addToQueueDirect(${song.id}, event)">+</button>
+                    </span>
+                `;
+                row.addEventListener('click', (e) => {
+                    if (e.target.closest('.table-action-btn')) return;
+                    playbackQueue = artistTracks.map(t => t.id);
+                    playQueueIndex(index);
+                });
+                artistTracksList.appendChild(row);
+            });
+
+            artistPlayBtn.onclick = () => {
+                playbackQueue = artistTracks.map(t => t.id);
+                playQueueIndex(0);
+            };
+
+            artistShuffleBtn.onclick = () => {
+                const shuffled = [...artistTracks];
+                for (let i = shuffled.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                }
+                playbackQueue = shuffled.map(t => t.id);
+                playQueueIndex(0);
+            };
+
+            dashboardView.classList.add('hidden-view');
+            playlistDetailView.classList.add('hidden-view');
+            settingsView.classList.add('hidden-view');
+            artistDetailView.classList.remove('hidden-view');
+            appHeader.classList.add('hidden-view');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        artistBackBtn.addEventListener('click', () => {
+            artistDetailView.classList.add('hidden-view');
+            dashboardView.classList.remove('hidden-view');
+            appHeader.classList.remove('hidden-view');
+        });
+
         function closeCreatePlaylistModal() {
             playlistModal.classList.add('hidden-element');
         }
@@ -420,9 +548,7 @@
 
         function savePlaylists() { localStorage.setItem('glass_playlists', JSON.stringify(playlists)); }
 
-        /* ==========================================================================
-           EXPORT & IMPORT (DOWNLOAD/UPLOAD) WORKSPACE UTILITIES
-           ========================================================================== */
+        // EXPORT & IMPORT BACKUP UTILITIES
         exportBtn.addEventListener('click', () => {
             const dataString = JSON.stringify(playlists, null, 2);
             const blob = new Blob([dataString], { type: "application/json" });
@@ -449,13 +575,11 @@
             reader.onload = function(event) {
                 try {
                     const loadedPlaylists = JSON.parse(event.target.result);
-                    
-                    // Basic structural validation check
                     if (typeof loadedPlaylists !== 'object' || loadedPlaylists === null || Array.isArray(loadedPlaylists)) {
-                        throw new Error("Invalid format matrix structure.");
+                        throw new Error("Invalid structure.");
                     }
 
-                    if (confirm("Importing backup files will overwrite current playlist settings data. Do you want to continue?")) {
+                    if (confirm("Importing backup files will overwrite current playlist data. Continue?")) {
                         playlists = loadedPlaylists;
                         savePlaylists();
                         renderPlaylistsUI();
@@ -465,12 +589,32 @@
                     }
                 } catch(err) {
                     alert("Failed to parse file. Please verify it is a valid backup file.");
-                    console.error("Import failure: ", err);
+                    console.error(err);
                 }
-                importFileInput.value = ""; // Clear file choice hook reset
+                importFileInput.value = ""; 
             };
             reader.readAsText(file);
         });
+
+        // LIVE REALTIME SEARCH INPUT RUNTIME HANDLER
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            refreshAllTrackCards(query);
+        });
+
+        // GENERATE CURATED RANDOMLY BALANCED DAILY SUGGESTIONS MIX (5 tracks)
+        function generateDailyRecommendations() {
+            if (currentPlaylist.length <= 5) {
+                recommendedPlaylist = [...currentPlaylist];
+            } else {
+                let shuffled = [...currentPlaylist];
+                for (let i = shuffled.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                }
+                recommendedPlaylist = shuffled.slice(0, 5);
+            }
+        }
 
         // AUDIO ROUTING LAUNCH PIPELINE
         function loadTrackByPlaylistIndex(id, targetPlayer = null) {
@@ -511,9 +655,9 @@
         function updateMetadataUI(track) {
             if (!track) return;
             document.getElementById('song-title').innerText = track.title;
-            document.getElementById('song-artist').innerText = track.artist;
+            if (songArtistLabel) songArtistLabel.innerText = track.artist;
             document.getElementById('fs-song-title').innerText = track.title;
-            document.getElementById('fs-song-artist').innerText = track.artist;
+            if (fsSongArtistLabel) fsSongArtistLabel.innerText = track.artist;
 
             const artUrl = window.location.origin + `/album-art?id=${track.id}&t=` + Date.now();
             document.getElementById('album-art').src = artUrl;
@@ -523,20 +667,41 @@
         }
 
         // QUEUE AND SCHEDULING TIMELINE WATCHER
+        function preloadNextCrossfadeTrack(nextQueueIndex) {
+            const nextTrackId = playbackQueue[nextQueueIndex];
+            const secondaryPlayer = (player === p1) ? p2 : p1;
+            const streamSrc = `/stream-music?id=${nextTrackId}`;
+
+            if (secondaryPlayer.src === window.location.origin + streamSrc) return;
+
+            secondaryPlayer.crossfadeReady = false;
+            secondaryPlayer.src = streamSrc;
+            secondaryPlayer.volume = 0.0;
+            secondaryPlayer.load();
+
+            const markReady = () => {
+                secondaryPlayer.crossfadeReady = true;
+                secondaryPlayer.removeEventListener('canplaythrough', markReady);
+                secondaryPlayer.removeEventListener('loadedmetadata', markReady);
+            };
+
+            if (secondaryPlayer.readyState >= 3) {
+                secondaryPlayer.crossfadeReady = true;
+            } else {
+                secondaryPlayer.addEventListener('canplaythrough', markReady);
+                secondaryPlayer.addEventListener('loadedmetadata', markReady);
+            }
+        }
+
         function monitorPlaybackTimeline() {
             if (!player.duration || isTransitioning) return;
 
             const timeRemaining = player.duration - player.currentTime;
             const nextQueueIndex = currentQueueIndex + 1;
 
-            if (crossfadeEnabled && timeRemaining <= 15 && nextQueueIndex < playbackQueue.length && preloadedIndex !== nextQueueIndex) {
+            if (crossfadeEnabled && nextQueueIndex < playbackQueue.length && preloadedIndex !== nextQueueIndex && timeRemaining <= Math.min(15, crossfadeDuration + 3)) {
                 preloadedIndex = nextQueueIndex;
-                const nextTrackId = playbackQueue[nextQueueIndex];
-                const secondaryPlayer = (player === p1) ? p2 : p1;
-                
-                secondaryPlayer.src = `/stream-music?id=${nextTrackId}`;
-                secondaryPlayer.volume = 0.0;
-                secondaryPlayer.load(); 
+                preloadNextCrossfadeTrack(nextQueueIndex);
             }
 
             if (crossfadeEnabled && timeRemaining <= crossfadeDuration && nextQueueIndex < playbackQueue.length) {
@@ -544,8 +709,9 @@
             }
         }
 
-        // PURE EQUAL-POWER DECK CROSSFADER
+        // DECK CROSSFADER
         function triggerCrossfadeSequence() {
+            if (isTransitioning) return;
             isTransitioning = true;
 
             const outgoingPlayer = player;
@@ -561,37 +727,53 @@
             updateGridHighlights(nextTrackId);
 
             incomingPlayer.volume = 0.0;
-            
             outgoingPlayer.playbackRate = 1.0;
             outgoingPlayer.preservesPitch = true;
             incomingPlayer.playbackRate = 1.0;
             incomingPlayer.preservesPitch = true;
 
-            incomingPlayer.play().catch(err => console.log("Pre-loaded play recovery event fired:", err));
+            const startFade = () => {
+                incomingPlayer.play().then(() => {
+                    const fadeDurationMs = crossfadeDuration * 1000;
+                    const startTime = performance.now();
 
-            const fadeDurationMs = crossfadeDuration * 1000;
-            const fadeIntervalDuration = 30; 
-            const startTime = Date.now();
+                    const fadeStep = (timestamp) => {
+                        const elapsed = timestamp - startTime;
+                        let progressRatio = elapsed / fadeDurationMs;
+                        if (progressRatio > 1) progressRatio = 1;
 
-            const fadeTimer = setInterval(() => {
-                const elapsed = Date.now() - startTime;
-                let progressRatio = elapsed / fadeDurationMs;
+                        outgoingPlayer.volume = Math.cos(progressRatio * Math.PI / 2);
+                        incomingPlayer.volume = Math.sin(progressRatio * Math.PI / 2);
 
-                if (progressRatio >= 1) progressRatio = 1;
+                        if (progressRatio < 1) {
+                            requestAnimationFrame(fadeStep);
+                        } else {
+                            outgoingPlayer.pause();
+                            outgoingPlayer.volume = 1.0;
+                            isTransitioning = false;
+                            renderQueueUI();
+                        }
+                    };
 
-                outgoingPlayer.volume = Math.cos(progressRatio * Math.PI / 2);
-                incomingPlayer.volume = Math.sin(progressRatio * Math.PI / 2);
-
-                if (progressRatio >= 1) {
-                    clearInterval(fadeTimer);
-                    
-                    outgoingPlayer.pause();
-                    outgoingPlayer.volume = 1.0;
-
+                    requestAnimationFrame(fadeStep);
+                }).catch((err) => {
+                    console.warn('Crossfade start failed:', err);
                     isTransitioning = false;
-                    renderQueueUI();
-                }
-            }, fadeIntervalDuration);
+                });
+            };
+
+            if (incomingPlayer.crossfadeReady || incomingPlayer.readyState >= 3) {
+                startFade();
+            } else {
+                const onTrackReady = () => {
+                    incomingPlayer.removeEventListener('canplaythrough', onTrackReady);
+                    incomingPlayer.removeEventListener('loadedmetadata', onTrackReady);
+                    startFade();
+                };
+                incomingPlayer.addEventListener('canplaythrough', onTrackReady);
+                incomingPlayer.addEventListener('loadedmetadata', onTrackReady);
+                incomingPlayer.load();
+            }
         }
 
         function updateGridHighlights(activeId) {
@@ -719,7 +901,7 @@
         };
 
         function navigateToDashboard() {
-            activePlaylistName = null; playlistDetailView.classList.add('hidden-view'); settingsView.classList.add('hidden-view'); dashboardView.classList.remove('hidden-view'); appHeader.classList.remove('hidden-view');
+            activePlaylistName = null; playlistDetailView.classList.add('hidden-view'); artistDetailView.classList.add('hidden-view'); settingsView.classList.add('hidden-view'); dashboardView.classList.remove('hidden-view'); appHeader.classList.remove('hidden-view');
         }
 
         playlistBackBtn.addEventListener('click', navigateToDashboard);
@@ -741,6 +923,12 @@
             const trackIds = playlistObj ? (playlistObj.tracks || playlistObj) : [];
             if (Array.isArray(trackIds) && trackIds.length > 0) return `/album-art?id=${trackIds[0]}`;
             return 'https://placehold.co/500x500/282828/aaaaaa?text=Empty';
+        }
+
+        function getArtistArtworkUrlByArtist(artistName) {
+            const track = currentPlaylist.find(t => t.artist === artistName);
+            if (track) return `/album-art?id=${track.id}`;
+            return `https://placehold.co/500x500/282828/aaaaaa?text=${encodeURIComponent(artistName)}`;
         }
 
         function renderPlaylistDetailPage(playlistName) {
@@ -793,6 +981,38 @@
                 card.innerHTML = `<div class="card-art-wrapper"><img src="${artworkUrl}"><div class="play-overlay"><svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M8 5v14l11-7z"/></svg></div></div><div class="card-meta-row"><div class="card-info-block"><h4>${pName}</h4><p>${trackCount} tracks</p></div></div>`;
                 card.addEventListener('click', () => openPlaylistPage(pName)); playlistsGrid.appendChild(card);
             });
+            renderArtistGrid();
+        }
+
+        function renderArtistGrid() {
+            const artists = [...new Set(currentPlaylist.map(song => song.artist))].sort();
+            artistsGrid.innerHTML = "";
+            if (artists.length === 0) {
+                artistsGrid.innerHTML = "<p class='empty-msg'>No artists available.</p>";
+                return;
+            }
+            artists.forEach(artistName => {
+                const artistTracks = currentPlaylist.filter(track => track.artist === artistName);
+                const artUrl = getArtistArtworkUrlByArtist(artistName);
+                const card = document.createElement('div');
+                card.className = 'grid-card playlist-card';
+                card.innerHTML = `
+                    <div class="card-art-wrapper">
+                        <img src="${artUrl}">
+                        <div class="play-overlay">
+                            <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
+                        </div>
+                    </div>
+                    <div class="card-meta-row">
+                        <div class="card-info-block">
+                            <h4>${artistName}</h4>
+                            <p>${artistTracks.length} ${artistTracks.length === 1 ? 'song' : 'songs'}</p>
+                        </div>
+                    </div>
+                `;
+                card.addEventListener('click', () => openArtistPage(artistName));
+                artistsGrid.appendChild(card);
+            });
         }
 
         function fetchLyrics(filename) {
@@ -806,24 +1026,105 @@
 
         function escapeHTML(str) { return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
 
-        dockMetaTrigger.addEventListener('click', () => { fsControlsMount.appendChild(dockControls); fullscreenOverlay.classList.remove('hidden-overlay'); });
+        albumArt.addEventListener('click', () => { fsControlsMount.appendChild(dockControls); fullscreenOverlay.classList.remove('hidden-overlay'); });
         closeOverlayBtn.addEventListener('click', () => { dockContentWrapper.appendChild(dockControls); fullscreenOverlay.classList.add('hidden-overlay'); });
         document.addEventListener('click', () => { document.querySelectorAll('.playlist-dropdown-menu').forEach(menu => menu.style.display = 'none'); });
 
-        function refreshAllTrackCards() {
+        // DYNAMIC FILTER GRID REFRESH CONTROLLER WITH RANKING MATRIX
+        function refreshAllTrackCards(searchQuery = "") {
             const grid = document.getElementById('music-grid');
             if (!grid) return;
-            if (currentPlaylist.length === 0) return;
-            
             grid.innerHTML = "";
-            currentPlaylist.forEach((song) => {
-                const card = document.createElement('div'); card.className = 'grid-card'; card.dataset.id = song.id;
-                let menuOptions = Object.keys(playlists).map(pName => `<div class="dropdown-item" onclick="addTrackToPlaylist(${song.id}, '${pName.replace(/'/g, "\\'")}', event)">Add to ${pName}</div>`).join('');
+
+            let displayTracks = [];
+
+            if (searchQuery !== "") {
+                tracksSectionTitle.innerText = "Search Results";
+                grid.classList.remove('ranked-recommendations-layout');
+                displayTracks = currentPlaylist.filter(track => 
+                    track.title.toLowerCase().includes(searchQuery) || 
+                    track.artist.toLowerCase().includes(searchQuery)
+                );
+                if (displayTracks.length === 0) {
+                    grid.innerHTML = "<p class='empty-msg'>No matching songs found.</p>";
+                    return;
+                }
+            } else {
+                tracksSectionTitle.innerText = "Recommended for Today";
+                grid.classList.add('ranked-recommendations-layout');
+                displayTracks = recommendedPlaylist;
+            }
+            
+            let sideStackContainer = null;
+            if (searchQuery === "") {
+                sideStackContainer = document.createElement('div');
+                sideStackContainer.className = 'recommendations-side-stack';
+            }
+
+            displayTracks.forEach((song, index) => {
+                const card = document.createElement('div'); 
+                card.className = 'grid-card'; 
+                card.dataset.id = song.id;
+
+                let rankBadgeHTML = "";
+                if (searchQuery === "") {
+                    const displayRank = index + 1;
+                    rankBadgeHTML = `<div class="rank-badge">${displayRank}</div>`;
+                    if (index === 0) {
+                        card.classList.add('rank-first');
+                    } else {
+                        card.classList.add('rank-subsequent');
+                    }
+                }
+
+                let menuOptions = Object.keys(playlists).map(pName => 
+                    `<div class="dropdown-item" onclick="addTrackToPlaylist(${song.id}, '${pName.replace(/'/g, "\\'")}', event)">Add to ${pName}</div>`
+                ).join('');
+                
                 if (menuOptions === "") menuOptions = `<div class="dropdown-item disabled-item">No playlists ready</div>`;
-                card.innerHTML = `<div class="card-art-wrapper"><img src="/album-art?id=${song.id}"><div class="play-overlay"><svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M8 5v14l11-7z"/></svg></div></div><div class="card-meta-row"><div class="card-info-block"><h4>${song.title}</h4><p>${song.artist}</p></div><div class="card-actions-wrapper"><button class="add-to-q-inline-btn" onclick="addToQueueDirect(${song.id}, event)">+</button><button class="playlist-menu-trigger-btn" onclick="togglePlaylistDropdown(${song.id}, event)">⋮</button><div id="dropdown-${song.id}" class="playlist-dropdown-menu">${menuOptions}</div></div></div>`;
-                card.addEventListener('click', (event) => { if (event.target.closest('.card-actions-wrapper')) return; playbackQueue = currentPlaylist.map(t => t.id); playQueueIndex(playbackQueue.indexOf(song.id)); });
-                grid.appendChild(card);
+                
+                card.innerHTML = `
+                    ${rankBadgeHTML}
+                    <div class="card-art-wrapper">
+                        <img src="/album-art?id=${song.id}">
+                        <div class="play-overlay">
+                            <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
+                        </div>
+                    </div>
+                    <div class="card-meta-row">
+                        <div class="card-info-block">
+                            <h4>${song.title}</h4>
+                            <p>${song.artist}</p>
+                        </div>
+                        <div class="card-actions-wrapper">
+                            <button class="add-to-q-inline-btn" onclick="addToQueueDirect(${song.id}, event)">+</button>
+                            <button class="playlist-menu-trigger-btn" onclick="togglePlaylistDropdown(${song.id}, event)">⋮</button>
+                            <div id="dropdown-${song.id}" class="playlist-dropdown-menu">${menuOptions}</div>
+                        </div>
+                    </div>
+                `;
+                
+                card.addEventListener('click', (event) => { 
+                    if (event.target.closest('.card-actions-wrapper')) return; 
+                    playbackQueue = displayTracks.map(t => t.id); 
+                    playQueueIndex(playbackQueue.indexOf(song.id)); 
+                });
+
+                if (searchQuery === "" && index > 0) {
+                    sideStackContainer.appendChild(card);
+                } else {
+                    grid.appendChild(card);
+                }
             });
+
+            if (searchQuery === "" && sideStackContainer && displayTracks.length > 1) {
+                grid.appendChild(sideStackContainer);
+            }
+
+            if (player.src) { 
+                const activeCard = currentPlaylist.find(t => player.src.includes(`id=${t.id}`)); 
+                if (activeCard) updateGridHighlights(activeCard.id); 
+            }
         }
 
         window.playQueueIndex = function(qIndex) {
@@ -859,9 +1160,6 @@
         p1.addEventListener('ended', () => { if (player === p1 && !isTransitioning) nextBtn.click(); });
         p2.addEventListener('ended', () => { if (player === p2 && !isTransitioning) nextBtn.click(); });
 
-        playAllBtn.addEventListener('click', () => { if (currentPlaylist.length === 0) return; playbackQueue = currentPlaylist.map(t => t.id); playQueueIndex(0); });
-        shuffleBtn.addEventListener('click', () => { if (currentPlaylist.length === 0) return; let indices = currentPlaylist.map(t => t.id); for (let i = indices.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [indices[i], indices[j]] = [indices[j], indices[i]]; } playbackQueue = indices; playQueueIndex(0); });
-
         function formatTime(secs) { if (isNaN(secs)) return "0:00"; const m = Math.floor(secs / 60); const s = Math.floor(secs % 60); return `${m}:${s < 10 ? '0' : ''}${s}`; }
 
         progressContainer.addEventListener('click', (e) => { if (!player.duration) return; const rect = progressContainer.getBoundingClientRect(); player.currentTime = ((e.clientX - rect.left) / rect.width) * player.duration; });
@@ -876,31 +1174,22 @@
             }
         }
 
-        // METADATA PARSING & SANITIZATION LAYER
         function sanitizeTrackMetadata(song) {
             if (!song) return;
-
             const separators = [' - ', ' – ', ' — ', ' _ '];
             let foundSeparator = null;
-
             for (let sep of separators) {
-                if (song.title.includes(sep)) {
-                    foundSeparator = sep;
-                    break;
-                }
+                if (song.title && song.title.includes(sep)) { foundSeparator = sep; break; }
             }
-
             if (foundSeparator) {
                 const parts = song.title.split(foundSeparator);
                 const guessedArtist = parts[0].trim();
                 const guessedTitle = parts[1].trim();
-
-                if (!song.artist || song.artist.toLowerCase() === 'unknown artist') {
-                    song.artist = guessedArtist;
-                    song.title = guessedTitle;
+                if (!song.artist || song.artist.toLowerCase() === 'unknown artist' || song.artist.trim() === "") { 
+                    song.artist = guessedArtist; 
+                    song.title = guessedTitle; 
                 }
-            } 
-            else if (!song.artist || song.artist.toLowerCase() === 'unknown artist') {
+            } else if (!song.artist || song.artist.toLowerCase() === 'unknown artist') {
                 song.title = song.title.replace(/_/g, ' ').trim();
             }
         }
@@ -911,10 +1200,12 @@
             .then(songs => {
                 songs.forEach(song => sanitizeTrackMetadata(song));
                 currentPlaylist = songs; 
+                generateDailyRecommendations();
                 refreshAllTrackCards(); 
                 renderPlaylistsUI(); 
             })
-            .catch(() => { 
+            .catch((err) => { 
+                console.error(err);
                 document.getElementById('music-grid').innerHTML = "<p class='empty-msg'>Failed to connect to streaming loop.</p>"; 
             });
     </script>

@@ -7,6 +7,14 @@
     --default-gradient: #1c1c1e;
 }
 
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+html {
+    overflow-x: hidden;
+}
+
 body {
     background-color: #1c1c1e; /* Core Charcoal Dark Muted Gray base */
     color: var(--text-main);
@@ -224,6 +232,8 @@ body.music-is-playing .ambient-bg {
 .title-row { display: flex; align-items: center; gap: 6px; }
 #song-title { font-weight: 600; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 #song-artist { font-size: 0.85rem; color: var(--text-muted); margin-top: 1px; }
+.artist-link { cursor: pointer; transition: color 0.2s ease; }
+.artist-link:hover { color: var(--accent-color); }
 .dock-controls { flex-grow: 1; display: flex; align-items: center; gap: 24px; }
 .control-buttons-group { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
 .control-btn { background: transparent; border: none; color: var(--text-main); display: flex; justify-content: center; align-items: center; cursor: pointer; transition: all 0.2s ease; }
@@ -322,10 +332,104 @@ body.music-is-playing .ambient-bg {
 .add-to-q-inline-btn { background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.05); color: white; width: 26px; height: 26px; border-radius: 50%; font-size: 1.1rem; font-weight: 500; cursor: pointer; display: flex; justify-content: center; align-items: center; margin-left: 8px; transition: all 0.2s ease; }
 .add-to-q-inline-btn:hover { background: white; color: black; transform: scale(1.08); }
 
-@media (max-width: 1100px) { .main-layout-wrapper { flex-direction: column; } .queue-drawer { width: 100%; height: auto; max-height: 300px; position: relative; top: 0; } }
+@media (max-width: 1100px) {
+    .main-layout-wrapper { flex-direction: column; }
+    .queue-drawer { width: 100%; height: auto; max-height: 300px; position: relative; top: 0; }
+}
+
+@media (max-width: 900px) {
+    .app-container { padding: 24px 16px 140px; }
+    .app-header { flex-direction: column; align-items: flex-start; gap: 16px; }
+    .header-right-controls { width: 100%; justify-content: flex-start; flex-wrap: wrap; gap: 10px; }
+    .pill-btn { padding: 10px 14px; font-size: 0.85rem; }
+    .music-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 18px; }
+    .player-dock { left: 0; transform: translateX(0); width: 100%; max-width: none; border-radius: 0; padding: 12px 16px; box-shadow: none; }
+    .dock-content { flex-direction: column; align-items: stretch; gap: 16px; }
+    .dock-track-info { min-width: auto; max-width: none; width: 100%; }
+    .dock-controls { gap: 16px; }
+    .progress-timeline { flex-direction: column; align-items: stretch; gap: 10px; }
+    .fullscreen-content-wrapper { flex-direction: column; gap: 20px; width: 100%; max-width: 100%; padding: 20px; }
+    .fullscreen-left-panel, .fullscreen-right-panel { width: 100%; height: auto; }
+    .lyrics-container { height: 320px; padding-right: 0; }
+    .playlist-header-main { flex-direction: column; align-items: flex-start; gap: 20px; }
+    .playlist-tracks-table .table-header-row, .playlist-tracks-table .table-row { grid-template-columns: 40px 1fr 1fr 80px; }
+    .p-detail-art-wrapper { width: 100%; height: auto; min-height: 220px; }
+    #p-detail-art { width: 100%; height: 100%; }
+    .search-wrapper { max-width: 100%; }
+    .card-meta-row { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .card-actions-wrapper { width: 100%; justify-content: flex-start; margin-left: 0; }
+    .ranked-recommendations-layout { grid-template-columns: 1fr; }
+    .ranked-recommendations-layout .recommendations-side-stack { display: grid; gap: 14px; }
+    #music-grid.ranked-recommendations-layout .recommendations-side-stack .grid-card.rank-subsequent {
+        height: auto !important;
+        padding: 14px !important;
+    }
+}
+
+@media (max-width: 650px) {
+    .app-header h1 { font-size: 2rem; }
+    .app-header p { font-size: 1rem; }
+    .pill-btn { padding: 10px 12px; }
+    .pill-btn.icon-only { width: 36px; height: 36px; }
+    .music-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 14px; }
+    .grid-card { padding: 10px; }
+    .card-meta-row { gap: 8px; }
+    .playlist-tracks-table .table-header-row, .playlist-tracks-table .table-row { grid-template-columns: 35px 1.5fr 1fr 70px; font-size: 0.85rem; }
+    .playlist-detail-view { padding-bottom: 30px; }
+    .section-header-row { flex-direction: column; align-items: flex-start; gap: 12px; }
+    .search-wrapper { flex-direction: column; align-items: stretch; gap: 12px; }
+    .search-icon { left: 12px; }
+    #library-search-input { padding: 11px 14px 11px 42px; }
+}
+
+@media (max-width: 500px) {
+    .app-container { padding: 18px 12px 120px; }
+    .app-header { gap: 12px; }
+    .app-header h1 { font-size: 1.8rem; }
+    .app-header p { font-size: 0.95rem; }
+    .header-right-controls { gap: 8px; }
+    .pill-btn { width: 100%; justify-content: center; padding: 10px 12px; }
+    .pill-btn.icon-only { width: 38px; height: 38px; padding: 0; }
+    .music-grid { grid-template-columns: 1fr; gap: 14px; }
+    .grid-card { padding: 10px; }
+    .card-meta-row { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .card-actions-wrapper { width: 100%; justify-content: flex-start; margin-left: 0; }
+    .playlist-header-main { gap: 16px; }
+    .p-action-row { flex-direction: column; align-items: stretch; }
+    .p-action-row .pill-btn { width: 100%; }
+    .playlist-tracks-table .table-header-row,
+    .playlist-tracks-table .table-row {
+        grid-template-columns: 36px 1fr 1fr 70px;
+        font-size: 0.85rem;
+    }
+    .playlist-tracks-table .table-row { grid-template-columns: 40px 1fr 1fr 70px; }
+    .p-detail-art-wrapper { width: 100%; min-height: 220px; }
+    #p-detail-title { font-size: 2.2rem; }
+    .fullscreen-content-wrapper { width: 100%; gap: 16px; }
+    .fullscreen-right-panel { height: auto; }
+    .lyrics-container { height: 300px; }
+    .search-wrapper { flex-direction: column; align-items: stretch; gap: 12px; }
+    #library-search-input { padding: 11px 14px 11px 42px; }
+    .playlist-menu-trigger-btn { width: 30px; height: 30px; font-size: 0.8rem; }
+    .playlist-dropdown-menu { min-width: calc(100% - 16px); right: 8px; left: auto; }
+    .queue-drawer { width: 100%; max-width: 100%; padding: 16px; position: relative; top: 0; max-height: none; }
+    .queue-items-list { max-height: 280px; }
+    .modal-card { max-width: 360px; padding: 24px; }
+    .modal-actions { flex-direction: column; align-items: stretch; }
+    .modal-actions .pill-btn { width: 100%; }
+    .close-overlay-btn { top: 20px; right: 16px; width: 40px; height: 40px; }
+    .fullscreen-player-overlay { padding: 0 12px; }
+    #fs-album-art { max-width: 100%; }
+    .playlist-header-main { gap: 14px; }
+    .p-action-row { gap: 10px; }
+    .p-action-row .pill-btn { padding: 10px 14px; }
+}
+
 .section-divider { border: none; height: 1px; background: linear-gradient(to right, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.02) 100%); margin: 40px 0; width: 100%; }
 .section-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 .section-header-row h3 { margin: 0; }
+.section-subtitle { color: var(--text-muted); font-size: 0.95rem; }
+.artists-section .grid-card { min-height: 170px; }
 .pill-btn.small { padding: 6px 14px; font-size: 0.8rem; }
 .card-actions-wrapper { display: flex; align-items: center; position: relative; margin-left: auto; }
 .playlist-menu-trigger-btn { background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.05); color: white; width: 26px; height: 26px; border-radius: 50%; font-size: 0.9rem; cursor: pointer; display: flex; justify-content: center; align-items: center; margin-left: 6px; transition: all 0.2s ease; }
@@ -349,8 +453,8 @@ body.music-is-playing .ambient-bg {
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 .back-text-btn { background: none; border: none; color: rgba(255, 255, 255, 0.6); font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; gap: 8px; padding: 0; margin-bottom: 25px; transition: color 0.2s ease; }
 .back-text-btn:hover { color: white; }
-.playlist-header-main { display: flex; gap: 30px; align-items: flex-end; margin-bottom: 35px; }
-#p-detail-art { width: 200px; height: 200px; object-fit: cover; border-radius: 12px; box-shadow: 0 15px 45px rgba(0, 0, 0, 0.4); background: #282828; }
+.playlist-header-main { display: flex; gap: 30px; align-items: center; margin-bottom: 35px; }
+#artist-detail-art { width: 200px; height: 200px; object-fit: cover; border-radius: 12px; box-shadow: 0 15px 45px rgba(0, 0, 0, 0.4); background: #282828; display: block; margin: 0 auto; }
 .p-header-text { display: flex; flex-direction: column; }
 .p-badge { font-size: 0.75rem; font-weight: 700; letter-spacing: 2px; color: var(--accent-color, #007aff); margin-bottom: 4px; }
 #p-detail-title { font-size: 2.8rem; margin: 0 0 8px 0; font-weight: 800; letter-spacing: -1px; }
@@ -496,6 +600,7 @@ input:checked + .switch-slider:before {
 
 /* CUSTOM RANGE INPUT RANGE SLIDERS */
 .settings-slider {
+    appearance: none;
     -webkit-appearance: none;
     width: 140px;
     height: 6px;
@@ -526,4 +631,137 @@ input:checked + .switch-slider:before {
     color: var(--text-muted);
     font-style: italic;
     background: rgba(255, 255, 255, 0.03);
+}
+/* Update or add this snippet to your style.css rules */
+.pill-btn.icon-only {
+    padding: 0;
+    width: 38px;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.pill-btn.icon-only svg {
+    display: block;
+    margin: 0;
+    padding: 0;
+}
+
+.pill-btn.icon-only:active {
+    transform: scale(0.95);
+}
+/* SEARCH SECTION WRAPPER STYLE */
+.search-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    align-items: center; /* Keeps items vertically aligned */
+}
+
+.search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%); /* Perfectly centers the icon vertically */
+    color: rgba(255, 255, 255, 0.45);
+    pointer-events: none;
+    transition: color 0.2s ease;
+    z-index: 2; /* Ensures it sits neatly above the background */
+}
+
+#library-search-input {
+    width: 100%;
+    padding: 11px 16px 11px 42px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
+    color: #ffffff;
+    font-size: 0.95rem;
+    font-family: inherit;
+    outline: none;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#library-search-input:focus {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.03);
+}
+
+.search-wrapper:focus-within .search-icon {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+#library-search-input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+/* 1. LOCK DOWN CARDS 2-5 TO STAY SMALL HORIZONTAL ROWS */
+#music-grid.ranked-recommendations-layout .recommendations-side-stack .grid-card.rank-subsequent {
+    position: relative !important;
+    display: flex !important;
+    flex-direction: row !important; /* Forces horizontal layout */
+    align-items: center !important;
+    padding: 12px 16px !important;
+    gap: 16px !important;
+    
+    /* Reset giant boundaries */
+    width: 100% !important;
+    max-width: none !important; 
+    height: 75px !important; /* Keeps them thin and uniform */
+    background: rgba(255, 255, 255, 0.03) !important;
+}
+
+/* 2. KEEP IMAGES IN THE RIGHT STACK COMPACT */
+#music-grid.ranked-recommendations-layout .recommendations-side-stack .grid-card.rank-subsequent .card-art-wrapper {
+    width: 52px !important;
+    height: 52px !important;
+    min-width: 52px !important;
+    aspect-ratio: 1 / 1 !important;
+    margin-bottom: 0 !important; /* Removes the bottom spacing from the hero layout */
+    flex-shrink: 0 !important;
+}
+
+/* 3. RESET TEXT SIZE FOR CARDS 2-5 */
+#music-grid.ranked-recommendations-layout .recommendations-side-stack .grid-card.rank-subsequent .card-meta-row h4 {
+    font-size: 1rem !important; /* Normal text size */
+    margin: 0 0 2px 0 !important;
+}
+
+#music-grid.ranked-recommendations-layout .recommendations-side-stack .grid-card.rank-subsequent .card-meta-row p {
+    font-size: 0.85rem !important;
+    margin: 0 !important;
+}
+/* 1. CENTER THE ENTIRE DASHBOARD CONTENT VIEW */
+#dashboard-view {
+    max-width: 1200px;       /* Sets a premium, unified max width for the page */
+    margin: 0 auto;          /* Centers the container horizontally */
+    padding: 20px 40px;      /* Gives the layout some nice breathing room on the sides */
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* 2. ENSURE THE ASYMMETRIC GRID ALIGNS CORRECTLY WITHIN THE CENTERED CONTAINER */
+.ranked-recommendations-layout {
+    display: grid !important;
+    grid-template-columns: 1.8fr 2fr; 
+    gap: 32px;               /* Slightly wider gap looks cleaner when centered */
+    justify-content: center; /* Centers the grid tracks horizontally */
+    align-items: start;      /* Aligns top of hero with top of the right stack */
+    width: 100%;
+    margin-bottom: 40px;     /* Separator space before playlists */
+}
+
+/* 3. OPTIONAL: CENTER YOUR SEARCH BAR REGION TO MATCH */
+.search-section {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start; /* Keeps search left-aligned to match the hero card, change to 'center' if you want the search bar right in the middle */
+    margin-bottom: 30px;
 }
