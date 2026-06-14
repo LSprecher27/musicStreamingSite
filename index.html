@@ -82,7 +82,7 @@
                                 <p id="p-detail-meta">0 tracks</p>
                                 <div class="p-action-row">
                                     <button id="p-play-btn" class="pill-btn primary">
-                                        <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M8 5v14l11-7z"/></svg Play
+                                        <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M8 5v14l11-7z"/></svg> Play
                                     </button>
                                     <button id="p-shuffle-btn" class="pill-btn secondary">
                                         <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg> Shuffle
@@ -142,6 +142,27 @@
                                 </div>
                                 <input type="range" id="setting-crossfade-duration" min="2" max="12" value="6" class="settings-slider">
                             </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-panel-card" style="margin-top: 20px;">
+                        <div class="settings-group-title">Backup & Portability</div>
+                        
+                        <div class="settings-row">
+                            <div class="settings-info">
+                                <label>Export Playlists File</label>
+                                <span class="settings-desc">Download a backup `.json` snapshot file of all custom playlist arrangements and cover art.</span>
+                            </div>
+                            <button id="export-playlists-btn" class="pill-btn secondary small" style="min-width: 100px;">Export</button>
+                        </div>
+
+                        <div class="settings-row">
+                            <div class="settings-info">
+                                <label>Import Playlists File</label>
+                                <span class="settings-desc">Restore or load an existing playlist backup file into your current browser workspace.</span>
+                            </div>
+                            <button id="import-trigger-btn" class="pill-btn primary small" style="min-width: 100px;">Import</button>
+                            <input type="file" id="import-file-input" accept=".json" style="display: none;">
                         </div>
                     </div>
                 </div>
@@ -303,6 +324,10 @@
         const cfDurationLabel = document.getElementById('cf-duration-val');
         const cfSubOptions = document.getElementById('crossfade-suboptions');
 
+        const exportBtn = document.getElementById('export-playlists-btn');
+        const importTriggerBtn = document.getElementById('import-trigger-btn');
+        const importFileInput = document.getElementById('import-file-input');
+
         let activePlaylistName = null;
 
         // INITIALIZE SYSTEM CONFIG VALUES
@@ -395,6 +420,58 @@
 
         function savePlaylists() { localStorage.setItem('glass_playlists', JSON.stringify(playlists)); }
 
+        /* ==========================================================================
+           EXPORT & IMPORT (DOWNLOAD/UPLOAD) WORKSPACE UTILITIES
+           ========================================================================== */
+        exportBtn.addEventListener('click', () => {
+            const dataString = JSON.stringify(playlists, null, 2);
+            const blob = new Blob([dataString], { type: "application/json" });
+            const downloadUrl = URL.createObjectURL(blob);
+            
+            const tempLink = document.createElement('a');
+            tempLink.href = downloadUrl;
+            tempLink.download = `glass_player_playlists_backup.json`;
+            document.body.appendChild(tempLink);
+            tempLink.click();
+            document.body.removeChild(tempLink);
+            URL.revokeObjectURL(downloadUrl);
+        });
+
+        importTriggerBtn.addEventListener('click', () => {
+            importFileInput.click();
+        });
+
+        importFileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                try {
+                    const loadedPlaylists = JSON.parse(event.target.result);
+                    
+                    // Basic structural validation check
+                    if (typeof loadedPlaylists !== 'object' || loadedPlaylists === null || Array.isArray(loadedPlaylists)) {
+                        throw new Error("Invalid format matrix structure.");
+                    }
+
+                    if (confirm("Importing backup files will overwrite current playlist settings data. Do you want to continue?")) {
+                        playlists = loadedPlaylists;
+                        savePlaylists();
+                        renderPlaylistsUI();
+                        refreshAllTrackCards();
+                        alert("Playlists imported successfully!");
+                        navigateToDashboardFromSettings();
+                    }
+                } catch(err) {
+                    alert("Failed to parse file. Please verify it is a valid backup file.");
+                    console.error("Import failure: ", err);
+                }
+                importFileInput.value = ""; // Clear file choice hook reset
+            };
+            reader.readAsText(file);
+        });
+
         // AUDIO ROUTING LAUNCH PIPELINE
         function loadTrackByPlaylistIndex(id, targetPlayer = null) {
             const track = currentPlaylist.find(t => t.id === id);
@@ -467,7 +544,7 @@
             }
         }
 
-        // PURE EQUAL-POWER DECK CROSSFADER (APPLE MUSIC PARITY STYLE)
+        // PURE EQUAL-POWER DECK CROSSFADER
         function triggerCrossfadeSequence() {
             isTransitioning = true;
 
@@ -502,7 +579,6 @@
 
                 if (progressRatio >= 1) progressRatio = 1;
 
-                // Equal-Power Curve Calculation formulas
                 outgoingPlayer.volume = Math.cos(progressRatio * Math.PI / 2);
                 incomingPlayer.volume = Math.sin(progressRatio * Math.PI / 2);
 
@@ -814,7 +890,6 @@
                 }
             }
 
-            // Splitting logic for nested attributes
             if (foundSeparator) {
                 const parts = song.title.split(foundSeparator);
                 const guessedArtist = parts[0].trim();
@@ -834,9 +909,7 @@
         fetch('/api/playlist?t=' + Date.now())
             .then(res => res.json())
             .then(songs => {
-                // Pass loaded elements through sanitization
                 songs.forEach(song => sanitizeTrackMetadata(song));
-                
                 currentPlaylist = songs; 
                 refreshAllTrackCards(); 
                 renderPlaylistsUI(); 
