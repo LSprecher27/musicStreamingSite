@@ -13,6 +13,9 @@
   "type": "commonjs",
   "dependencies": {
     "express": "^5.2.1",
-    "music-metadata": "^11.13.0"
+    "ffmpeg-static": "^5.3.0",
+    "music-metadata": "^11.13.0",
+    "music-tempo": "^1.0.3",
+    "pitchfinder": "^2.3.4"
   }
 }

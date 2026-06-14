@@ -2,9 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Liquid Glass">
+    <meta name="theme-color" content="#0b0b12">
     <title>Liquid Glass Home</title>
     <link rel="icon" href="assets/brandimage.png" type="image/png">
+    <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -194,6 +199,16 @@
                                 <input type="range" id="setting-crossfade-duration" min="2" max="12" value="6" class="settings-slider">
                             </div>
                         </div>
+                        <div class="settings-row">
+                            <div class="settings-info">
+                                <label for="setting-dj-match-toggle">DJ Match Tempo & Key</label>
+                                <span class="settings-desc">Attempt to match the next track's BPM and musical key when available, falling back on BPM-only matching.</span>
+                            </div>
+                            <label class="switch-toggle">
+                                <input type="checkbox" id="setting-dj-match-toggle">
+                                <span class="switch-slider"></span>
+                            </label>
+                        </div>
                     </div>
 
                     <div class="settings-panel-card" style="margin-top: 20px;">
@@ -318,6 +333,7 @@
 
         let crossfadeEnabled = localStorage.getItem('glass_cf_enabled') === 'true';
         let crossfadeDuration = parseInt(localStorage.getItem('glass_cf_duration')) || 6;
+        let djMatchEnabled = localStorage.getItem('glass_dj_match_enabled') === 'true';
         let isTransitioning = false;
         let preloadedIndex = -1; 
 
@@ -371,6 +387,7 @@
         const cfDurationInput = document.getElementById('setting-crossfade-duration');
         const cfDurationLabel = document.getElementById('cf-duration-val');
         const cfSubOptions = document.getElementById('crossfade-suboptions');
+        const djMatchToggle = document.getElementById('setting-dj-match-toggle');
 
         const exportBtn = document.getElementById('export-playlists-btn');
         const importTriggerBtn = document.getElementById('import-trigger-btn');
@@ -407,6 +424,7 @@
         cfDurationInput.value = crossfadeDuration;
         cfDurationLabel.innerText = crossfadeDuration;
         if (crossfadeEnabled) cfSubOptions.classList.remove('hidden-element');
+        if (djMatchToggle) djMatchToggle.checked = djMatchEnabled;
 
         cfToggleInput.addEventListener('change', (e) => {
             crossfadeEnabled = e.target.checked;
@@ -414,6 +432,13 @@
             if (crossfadeEnabled) cfSubOptions.classList.remove('hidden-element');
             else cfSubOptions.classList.add('hidden-element');
         });
+
+        if (djMatchToggle) {
+            djMatchToggle.addEventListener('change', (e) => {
+                djMatchEnabled = e.target.checked;
+                localStorage.setItem('glass_dj_match_enabled', djMatchEnabled);
+            });
+        }
 
         cfDurationInput.addEventListener('input', (e) => {
             crossfadeDuration = parseInt(e.target.value);
@@ -666,6 +691,70 @@
             fetchLyrics(track.filename);
         }
 
+        function normalizeKey(keyString) {
+            if (!keyString || typeof keyString !== 'string') return null;
+            return keyString.trim().toLowerCase();
+        }
+
+        function findBestDjMatchQueueIndex(currentTrack) {
+            if (!currentTrack || !playbackQueue.length) return currentQueueIndex + 1;
+            const currentKey = normalizeKey(currentTrack.key);
+            const currentBpm = Number(currentTrack.bpm) || null;
+
+            let bestIndex = null;
+            let bestScore = Infinity;
+            const queueIndices = [...Array(playbackQueue.length).keys()];
+            queueIndices.sort((a, b) => {
+                const aDistance = a <= currentQueueIndex ? playbackQueue.length + a : a;
+                const bDistance = b <= currentQueueIndex ? playbackQueue.length + b : b;
+                return aDistance - bDistance;
+            });
+
+            queueIndices.forEach((idx) => {
+                if (idx === currentQueueIndex) return;
+                const trackId = playbackQueue[idx];
+                const track = currentPlaylist.find(t => t.id === trackId);
+                if (!track) return;
+
+                let score = 0;
+                const trackKey = normalizeKey(track.key);
+                if (currentKey && trackKey) {
+                    score += currentKey === trackKey ? 0 : 50;
+                }
+                if (currentBpm && track.bpm) {
+                    score += Math.abs(currentBpm - Number(track.bpm));
+                } else {
+                    score += 100;
+                }
+
+                if (score < bestScore) {
+                    bestScore = score;
+                    bestIndex = idx;
+                }
+            });
+
+            if (bestIndex === null) {
+                bestIndex = currentQueueIndex + 1;
+                if (bestIndex >= playbackQueue.length) bestIndex = 0;
+            }
+            return bestIndex;
+        }
+
+        function applyTempoMatch(outgoingTrack, incomingTrack, incomingPlayer) {
+            if (!djMatchEnabled || !outgoingTrack || !incomingTrack || !outgoingTrack.bpm || !incomingTrack.bpm) {
+                incomingPlayer.playbackRate = 1.0;
+                return;
+            }
+            const outgoingBpm = Number(outgoingTrack.bpm);
+            const incomingBpm = Number(incomingTrack.bpm);
+            if (!outgoingBpm || !incomingBpm) {
+                incomingPlayer.playbackRate = 1.0;
+                return;
+            }
+            const rate = outgoingBpm / incomingBpm;
+            incomingPlayer.playbackRate = (rate >= 0.85 && rate <= 1.15) ? rate : 1.0;
+        }
+
         // QUEUE AND SCHEDULING TIMELINE WATCHER
         function preloadNextCrossfadeTrack(nextQueueIndex) {
             const nextTrackId = playbackQueue[nextQueueIndex];
@@ -694,10 +783,11 @@
         }
 
         function monitorPlaybackTimeline() {
-            if (!player.duration || isTransitioning) return;
+            if (!player.duration || isTransitioning || currentQueueIndex < 0) return;
 
             const timeRemaining = player.duration - player.currentTime;
-            const nextQueueIndex = currentQueueIndex + 1;
+            const currentTrack = currentPlaylist.find(t => t.id === playbackQueue[currentQueueIndex]);
+            const nextQueueIndex = djMatchEnabled && currentTrack ? findBestDjMatchQueueIndex(currentTrack) : currentQueueIndex + 1;
 
             if (crossfadeEnabled && nextQueueIndex < playbackQueue.length && preloadedIndex !== nextQueueIndex && timeRemaining <= Math.min(15, crossfadeDuration + 3)) {
                 preloadedIndex = nextQueueIndex;
@@ -716,8 +806,8 @@
 
             const outgoingPlayer = player;
             const incomingPlayer = (player === p1) ? p2 : p1;
-            
-            const nextQueueIndex = currentQueueIndex + 1;
+            const currentTrack = currentPlaylist.find(t => t.id === playbackQueue[currentQueueIndex]);
+            const nextQueueIndex = djMatchEnabled && currentTrack ? findBestDjMatchQueueIndex(currentTrack) : currentQueueIndex + 1;
             const nextTrackId = playbackQueue[nextQueueIndex];
             const nextTrack = currentPlaylist.find(t => t.id === nextTrackId);
 
@@ -729,8 +819,8 @@
             incomingPlayer.volume = 0.0;
             outgoingPlayer.playbackRate = 1.0;
             outgoingPlayer.preservesPitch = true;
-            incomingPlayer.playbackRate = 1.0;
             incomingPlayer.preservesPitch = true;
+            applyTempoMatch(currentTrack, nextTrack, incomingPlayer);
 
             const startFade = () => {
                 incomingPlayer.play().then(() => {
@@ -750,6 +840,7 @@
                         } else {
                             outgoingPlayer.pause();
                             outgoingPlayer.volume = 1.0;
+                            outgoingPlayer.playbackRate = 1.0;
                             isTransitioning = false;
                             renderQueueUI();
                         }
@@ -1145,6 +1236,7 @@
 
         const handlePlaybackTimeUpdate = () => {
             monitorPlaybackTimeline();
+            updateMediaSessionPositionState();
             if (!player.duration || player.paused) return;
             const percentage = (player.currentTime / player.duration) * 100;
             progressFill.style.width = `${percentage}%`;
@@ -1166,11 +1258,68 @@
 
         function updateMobileMediaSession(track, artworkUrl) {
             if ('mediaSession' in navigator) {
-                navigator.mediaSession.metadata = new MediaMetadata({ title: track.title, artist: track.artist, album: "Local Library", artwork: [{ src: artworkUrl, sizes: '512x512', type: 'image/jpeg' }] });
-                navigator.mediaSession.setActionHandler('play', () => { player.play().then(() => setPlayState(true)); });
-                navigator.mediaSession.setActionHandler('pause', () => { player.pause(); setPlayState(false); });
+                // Multiple artwork sizes for different device lock screens
+                const artwork = [
+                    { src: artworkUrl, sizes: '96x96', type: 'image/jpeg' },
+                    { src: artworkUrl, sizes: '128x128', type: 'image/jpeg' },
+                    { src: artworkUrl, sizes: '192x192', type: 'image/jpeg' },
+                    { src: artworkUrl, sizes: '256x256', type: 'image/jpeg' },
+                    { src: artworkUrl, sizes: '384x384', type: 'image/jpeg' },
+                    { src: artworkUrl, sizes: '512x512', type: 'image/jpeg' }
+                ];
+
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: track.title,
+                    artist: track.artist,
+                    album: track.album || "Local Library",
+                    artwork: artwork
+                });
+
+                // Playback controls
+                navigator.mediaSession.setActionHandler('play', () => { 
+                    player.play().then(() => setPlayState(true)).catch(err => console.warn('Play failed:', err)); 
+                });
+                navigator.mediaSession.setActionHandler('pause', () => { 
+                    player.pause(); 
+                    setPlayState(false); 
+                });
+                
+                // Navigation controls
                 navigator.mediaSession.setActionHandler('previoustrack', () => { prevBtn.click(); });
                 navigator.mediaSession.setActionHandler('nexttrack', () => { nextBtn.click(); });
+                
+                // Skip controls (if supported)
+                try {
+                    navigator.mediaSession.setActionHandler('skipad', () => { nextBtn.click(); });
+                } catch (e) { }
+                
+                // Seek controls (if supported)
+                try {
+                    navigator.mediaSession.setActionHandler('seek', (details) => {
+                        player.currentTime = details.seekTime;
+                        updatePlaybackTimeline();
+                    });
+                    navigator.mediaSession.setActionHandler('seekforward', (details) => {
+                        player.currentTime = Math.min(player.currentTime + (details.skipTime || 10), player.duration);
+                        updatePlaybackTimeline();
+                    });
+                    navigator.mediaSession.setActionHandler('seekbackward', (details) => {
+                        player.currentTime = Math.max(player.currentTime - (details.skipTime || 10), 0);
+                        updatePlaybackTimeline();
+                    });
+                } catch (e) { }
+            }
+        }
+
+        function updateMediaSessionPositionState() {
+            if ('mediaSession' in navigator && 'setPositionState' in navigator.mediaSession && !isNaN(player.duration) && player.duration > 0) {
+                try {
+                    navigator.mediaSession.setPositionState({
+                        duration: player.duration,
+                        playbackRate: player.playbackRate,
+                        position: player.currentTime
+                    });
+                } catch (e) { }
             }
         }
 
