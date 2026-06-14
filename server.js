@@ -4,7 +4,7 @@ const path = require('path');
 const mm = require('music-metadata');
 
 const app = express();
-const PORT = 4545;
+const PORT = process.env.PORT || 4545;
 const MUSIC_DIR = path.join(__dirname, 'music');
 
 // Ensure music directory exists
@@ -18,6 +18,13 @@ app.use('/music', express.static(MUSIC_DIR));
 
 // Memory cache for tracks
 let trackCache = [];
+
+async function getTracks() {
+    if (trackCache.length === 0) {
+        await scanMusicDirectory();
+    }
+    return trackCache;
+}
 
 // Helper to scan directory and extract tags
 async function scanMusicDirectory() {
@@ -58,15 +65,19 @@ async function scanMusicDirectory() {
 
 // API endpoint to fetch playlist data
 app.get('/api/playlist', async (req, res) => {
-    await scanMusicDirectory();
-    res.json(trackCache);
+    const tracks = await getTracks();
+    res.json(tracks);
 });
 
 // Stream audio file route
-app.get('/stream-music', (req, res) => {
-    const id = parseInt(req.query.id);
-    const track = trackCache.find(t => t.id === id);
-    if (!track) return res.status(404).send('Track not found');
+app.get('/stream-music', async (req, res) => {
+    const id = parseInt(req.query.id, 10);
+    const tracks = await getTracks();
+    const track = tracks.find(t => t.id === id);
+
+    if (!track) {
+        return res.status(404).send('Track not found');
+    }
 
     const filePath = path.join(MUSIC_DIR, track.filename);
     res.sendFile(filePath);
@@ -74,9 +85,13 @@ app.get('/stream-music', (req, res) => {
 
 // Fetch album artwork route
 app.get('/album-art', async (req, res) => {
-    const id = parseInt(req.query.id);
-    const track = trackCache.find(t => t.id === id);
-    if (!track) return res.status(404).send('Not found');
+    const id = parseInt(req.query.id, 10);
+    const tracks = await getTracks();
+    const track = tracks.find(t => t.id === id);
+
+    if (!track) {
+        return res.status(404).send('Not found');
+    }
 
     try {
         const filePath = path.join(MUSIC_DIR, track.filename);
@@ -87,12 +102,23 @@ app.get('/album-art', async (req, res) => {
             res.contentType(picture.format);
             return res.send(picture.data);
         }
-    } catch (e) {}
+    } catch (e) {
+        console.error('Artwork parse error:', e.message);
+    }
 
     // Fallback placeholder image if no art is found
     res.redirect('https://placehold.co/500x500/282828/aaaaaa?text=No+Art');
 });
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
     console.log(`Streaming server running beautifully at http://localhost:${PORT}`);
+});
+
+server.on('error', err => {
+    if (err.code === 'EADDRINUSE') {
+        console.error(`Port ${PORT} is already in use. Set PORT to another value or stop the process using that port.`);
+        process.exit(1);
+    }
+    console.error('Server error:', err);
+    process.exit(1);
 });

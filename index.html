@@ -8,8 +8,8 @@
 </head>
 <body>
     <div id="audio-engine-container">
-        <audio id="audio-player-1"></audio>
-        <audio id="audio-player-2"></audio>
+        <audio id="audio-player-1" crossorigin="anonymous"></audio>
+        <audio id="audio-player-2" crossorigin="anonymous"></audio>
     </div>
     <div id="dynamic-ambient-bg" class="ambient-bg"></div>
     <div class="bg-overlay"></div>
@@ -33,7 +33,7 @@
                     <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M4 6h16v2H4zm0 5h16v2H4zm0 5h11v2H4zm14 0v-5h2v5zm-1 5l2-3 2 3z"/></svg>
                 </button>
                 <button id="toggle-settings-btn" class="pill-btn secondary icon-only" title="Settings">
-                    <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3-1.07-3-3.5s1.07-3.5 3-3.5 3 1.07 3 3.5-1.07 3.5-3 3.5z"/></svg>
+                    <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3-1.07-3-3.5s1.07-3.5 3-3.5 3 1.07 3 3.5-1.07 3.5-3 3.5z"/></svg>
                 </button>
             </div>
         </header>
@@ -82,7 +82,7 @@
                                 <p id="p-detail-meta">0 tracks</p>
                                 <div class="p-action-row">
                                     <button id="p-play-btn" class="pill-btn primary">
-                                        <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M8 5v14l11-7z"/></svg> Play
+                                        <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M8 5v14l11-7z"/></svg Play
                                     </button>
                                     <button id="p-shuffle-btn" class="pill-btn secondary">
                                         <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg> Shuffle
@@ -140,18 +140,7 @@
                                     <label for="setting-crossfade-duration">Transition Duration</label>
                                     <span class="settings-desc">Sets how long songs blend into one another (<span id="cf-duration-val">6</span>s).</span>
                                 </div>
-                                <input type="range" id="setting-crossfade-duration" min="2" max="15" value="6" class="settings-slider">
-                            </div>
-
-                            <div class="settings-row">
-                                <div class="settings-info">
-                                    <label for="setting-bpm-toggle">Intelligent Tempo Matching (BPM Match)</label>
-                                    <span class="settings-desc">Dynamically curves the playback speed of the fading track to match the speed of the incoming song.</span>
-                                </div>
-                                <label class="switch-toggle">
-                                    <input type="checkbox" id="setting-bpm-toggle" checked>
-                                    <span class="switch-slider"></span>
-                                </label>
+                                <input type="range" id="setting-crossfade-duration" min="2" max="12" value="6" class="settings-slider">
                             </div>
                         </div>
                     </div>
@@ -254,16 +243,19 @@
         let currentQueueIndex = -1;
         let playlists = JSON.parse(localStorage.getItem('glass_playlists')) || {};
 
-        // ENGINE APP STATE ENGINE VARIABLES
+        // ENGINE APP STATE CONFIGURATIONS
         let crossfadeEnabled = localStorage.getItem('glass_cf_enabled') === 'true';
         let crossfadeDuration = parseInt(localStorage.getItem('glass_cf_duration')) || 6;
-        let bpmMatchEnabled = localStorage.getItem('glass_bpm_enabled') !== 'false'; // default true
         let isTransitioning = false;
+        let preloadedIndex = -1; 
 
-        // DUAL ENGINE DOM PICKER REFERENCE LAYER
+        // DUAL ENGINE ROUTING SELECTION
         const p1 = document.getElementById('audio-player-1');
         const p2 = document.getElementById('audio-player-2');
-        let player = p1; // Active structural target variable reference node pointing to current active player
+        let player = p1; 
+
+        p1.preload = "auto";
+        p2.preload = "auto";
 
         const playBtn = document.getElementById('play-btn');
         const playIcon = document.getElementById('play-icon');
@@ -306,43 +298,30 @@
         const modalCancelBtn = document.getElementById('modal-cancel-btn');
         const modalSubmitBtn = document.getElementById('modal-submit-btn');
 
-        // SETTINGS INPUT FIELD ELEMENT CONNECTIONS
         const cfToggleInput = document.getElementById('setting-crossfade-toggle');
         const cfDurationInput = document.getElementById('setting-crossfade-duration');
-        const cfDurationVal = document.getElementById('setting-crossfade-duration');
         const cfDurationLabel = document.getElementById('cf-duration-val');
-        const bpmToggleInput = document.getElementById('setting-bpm-toggle');
         const cfSubOptions = document.getElementById('crossfade-suboptions');
 
         let activePlaylistName = null;
 
-        // INITIALIZE SETTINGS INTERFACE CONTROLS VALUES FROM CACHE STATE ENGINE
+        // INITIALIZE SYSTEM CONFIG VALUES
         cfToggleInput.checked = crossfadeEnabled;
         cfDurationInput.value = crossfadeDuration;
         cfDurationLabel.innerText = crossfadeDuration;
-        bpmToggleInput.checked = bpmMatchEnabled;
         if (crossfadeEnabled) cfSubOptions.classList.remove('hidden-element');
 
-        // EVENT INTERFACES FOR SETTINGS ROUTING PANEL CHANGES
         cfToggleInput.addEventListener('change', (e) => {
             crossfadeEnabled = e.target.checked;
             localStorage.setItem('glass_cf_enabled', crossfadeEnabled);
-            if (crossfadeEnabled) {
-                cfSubOptions.classList.remove('hidden-element');
-            } else {
-                cfSubOptions.classList.add('hidden-element');
-            }
+            if (crossfadeEnabled) cfSubOptions.classList.remove('hidden-element');
+            else cfSubOptions.classList.add('hidden-element');
         });
 
         cfDurationInput.addEventListener('input', (e) => {
             crossfadeDuration = parseInt(e.target.value);
             cfDurationLabel.innerText = crossfadeDuration;
             localStorage.setItem('glass_cf_duration', crossfadeDuration);
-        });
-
-        bpmToggleInput.addEventListener('change', (e) => {
-            bpmMatchEnabled = e.target.checked;
-            localStorage.setItem('glass_bpm_enabled', bpmMatchEnabled);
         });
 
         toggleQueueBtn.addEventListener('click', () => {
@@ -356,6 +335,7 @@
             setPlayState(false);
             playbackQueue = [];
             currentQueueIndex = -1;
+            preloadedIndex = -1;
             isTransitioning = false;
             
             document.body.classList.remove('music-is-playing');
@@ -415,34 +395,28 @@
 
         function savePlaylists() { localStorage.setItem('glass_playlists', JSON.stringify(playlists)); }
 
-        // CORE INTUATIVE DECOUPLED TRACK LAUNCH LAYER ENGINE
+        // AUDIO ROUTING LAUNCH PIPELINE
         function loadTrackByPlaylistIndex(id, targetPlayer = null) {
             const track = currentPlaylist.find(t => t.id === id);
             if (!track) return;
 
-            // If an explicit deck target isn't specified, fall back to standard core active node reference selection
             const activePlayerDeck = targetPlayer || player;
 
             document.getElementById('player-dock').classList.remove('hidden');
             document.body.classList.add('music-is-playing');
             
-            // Only update track metadata layout views if loading data into the core focused player channel line 
             if (activePlayerDeck === player) {
-                document.getElementById('song-title').innerText = track.title;
-                document.getElementById('song-artist').innerText = track.artist;
-                document.getElementById('fs-song-title').innerText = track.title;
-                document.getElementById('fs-song-artist').innerText = track.artist;
-
-                const artUrl = window.location.origin + `/album-art?id=${track.id}&t=` + Date.now();
-                document.getElementById('album-art').src = artUrl;
-                document.getElementById('fs-album-art').src = artUrl;
-                document.getElementById('dynamic-ambient-bg').style.backgroundImage = `url('${artUrl}')`;
-                fetchLyrics(track.filename);
+                updateMetadataUI(track);
             }
 
-            activePlayerDeck.src = `/stream-music?id=${track.id}`;
+            const streamSrc = `/stream-music?id=${track.id}`;
+            if (activePlayerDeck.src !== window.location.origin + streamSrc) {
+                activePlayerDeck.src = streamSrc;
+            }
+            
             activePlayerDeck.volume = 1.0;
-            activePlayerDeck.playbackRate = 1.0; // Reset tempo back to 100% flat standard baseline speed values
+            activePlayerDeck.playbackRate = 1.0; 
+            activePlayerDeck.preservesPitch = true;
 
             activePlayerDeck.play()
                 .then(() => {
@@ -457,82 +431,89 @@
             updateGridHighlights(id);
         }
 
-        // SEAMLESS INTEGRATED CONTINUOUS MONITOR DECK SCHEDULER CROSSFADER
+        function updateMetadataUI(track) {
+            if (!track) return;
+            document.getElementById('song-title').innerText = track.title;
+            document.getElementById('song-artist').innerText = track.artist;
+            document.getElementById('fs-song-title').innerText = track.title;
+            document.getElementById('fs-song-artist').innerText = track.artist;
+
+            const artUrl = window.location.origin + `/album-art?id=${track.id}&t=` + Date.now();
+            document.getElementById('album-art').src = artUrl;
+            document.getElementById('fs-album-art').src = artUrl;
+            document.getElementById('dynamic-ambient-bg').style.backgroundImage = `url('${artUrl}')`;
+            fetchLyrics(track.filename);
+        }
+
+        // QUEUE AND SCHEDULING TIMELINE WATCHER
         function monitorPlaybackTimeline() {
-            if (!player.duration || isTransitioning || !crossfadeEnabled) return;
+            if (!player.duration || isTransitioning) return;
 
             const timeRemaining = player.duration - player.currentTime;
+            const nextQueueIndex = currentQueueIndex + 1;
 
-            // Trigger the upcoming sequence when remaining playback seconds matches crossfade settings threshold
-            if (timeRemaining <= crossfadeDuration && currentQueueIndex < playbackQueue.length - 1) {
+            if (crossfadeEnabled && timeRemaining <= 15 && nextQueueIndex < playbackQueue.length && preloadedIndex !== nextQueueIndex) {
+                preloadedIndex = nextQueueIndex;
+                const nextTrackId = playbackQueue[nextQueueIndex];
+                const secondaryPlayer = (player === p1) ? p2 : p1;
+                
+                secondaryPlayer.src = `/stream-music?id=${nextTrackId}`;
+                secondaryPlayer.volume = 0.0;
+                secondaryPlayer.load(); 
+            }
+
+            if (crossfadeEnabled && timeRemaining <= crossfadeDuration && nextQueueIndex < playbackQueue.length) {
                 triggerCrossfadeSequence();
             }
         }
 
+        // PURE EQUAL-POWER DECK CROSSFADER (APPLE MUSIC PARITY STYLE)
         function triggerCrossfadeSequence() {
             isTransitioning = true;
 
-            // Alternate operational lines cleanly
             const outgoingPlayer = player;
             const incomingPlayer = (player === p1) ? p2 : p1;
             
             const nextQueueIndex = currentQueueIndex + 1;
             const nextTrackId = playbackQueue[nextQueueIndex];
-            
-            const currentTrack = currentPlaylist.find(t => t.id === playbackQueue[currentQueueIndex]);
             const nextTrack = currentPlaylist.find(t => t.id === nextTrackId);
 
-            // Compute structural playback acceleration adjustments if BPM attributes exist on tracking files
-            if (bpmMatchEnabled && currentTrack && nextTrack && currentTrack.bpm && nextTrack.bpm) {
-                const targetRatio = nextTrack.bpm / currentTrack.bpm;
-                // Soft cap limits to filter out erratic acceleration anomalies 
-                const clampedRatio = Math.max(0.85, Math.min(1.15, targetRatio));
-                
-                // Curve the outgoing playback rate to synchronize matching grids linearly before structural termination
-                outgoingPlayer.playbackRate = clampedRatio;
-            }
-
-            // Fire and load the incoming alternate pipeline channel
             currentQueueIndex = nextQueueIndex;
-            loadTrackByPlaylistIndex(nextTrackId, incomingPlayer);
-            incomingPlayer.volume = 0.0;
+            player = incomingPlayer;
+            updateMetadataUI(nextTrack);
+            updateGridHighlights(nextTrackId);
 
-            const fadeIntervalDuration = 100; // Step adjustments happen every 100 milliseconds
-            const totalSteps = (crossfadeDuration * 1000) / fadeIntervalDuration;
-            let currentStep = 0;
+            incomingPlayer.volume = 0.0;
+            
+            outgoingPlayer.playbackRate = 1.0;
+            outgoingPlayer.preservesPitch = true;
+            incomingPlayer.playbackRate = 1.0;
+            incomingPlayer.preservesPitch = true;
+
+            incomingPlayer.play().catch(err => console.log("Pre-loaded play recovery event fired:", err));
+
+            const fadeDurationMs = crossfadeDuration * 1000;
+            const fadeIntervalDuration = 30; 
+            const startTime = Date.now();
 
             const fadeTimer = setInterval(() => {
-                currentStep++;
-                const progressRatio = currentStep / totalSteps;
+                const elapsed = Date.now() - startTime;
+                let progressRatio = elapsed / fadeDurationMs;
 
-                // Adjust volume tracks linearly along opposing scale arrays
-                outgoingPlayer.volume = Math.max(0, 1 - progressRatio);
-                incomingPlayer.volume = Math.min(1, progressRatio);
+                if (progressRatio >= 1) progressRatio = 1;
 
-                if (currentStep >= totalSteps) {
+                // Equal-Power Curve Calculation formulas
+                outgoingPlayer.volume = Math.cos(progressRatio * Math.PI / 2);
+                incomingPlayer.volume = Math.sin(progressRatio * Math.PI / 2);
+
+                if (progressRatio >= 1) {
                     clearInterval(fadeTimer);
                     
                     outgoingPlayer.pause();
-                    outgoingPlayer.src = "";
                     outgoingPlayer.volume = 1.0;
-                    outgoingPlayer.playbackRate = 1.0;
 
-                    // Promote the incoming track node back into primary focus control routing assignment configurations
-                    player = incomingPlayer;
                     isTransitioning = false;
-
-                    // Update layouts safely to sync focused channel states 
-                    if (nextTrack) {
-                        document.getElementById('song-title').innerText = nextTrack.title;
-                        document.getElementById('song-artist').innerText = nextTrack.artist;
-                        document.getElementById('fs-song-title').innerText = nextTrack.title;
-                        document.getElementById('fs-song-artist').innerText = nextTrack.artist;
-                        const artUrl = window.location.origin + `/album-art?id=${nextTrack.id}`;
-                        document.getElementById('album-art').src = artUrl;
-                        document.getElementById('fs-album-art').src = artUrl;
-                        document.getElementById('dynamic-ambient-bg').style.backgroundImage = `url('${artUrl}')`;
-                        fetchLyrics(nextTrack.filename);
-                    }
+                    renderQueueUI();
                 }
             }, fadeIntervalDuration);
         }
@@ -562,15 +543,12 @@
                 const qItem = document.createElement('div');
                 qItem.className = `queue-item ${idx === currentQueueIndex ? 'active-q-item' : ''}`;
                 
-                // Render custom context line with metadata badge parameters if server provides bpm values
-                const bpmBadge = track.bpm ? `<span class="queue-bpm-badge">${track.bpm} BPM</span>` : '';
-
                 qItem.innerHTML = `
                     <div class="q-item-meta" onclick="playQueueIndex(${idx})">
                         <img src="/album-art?id=${track.id}" alt="Art">
                         <div class="q-item-text">
                             <h5>${track.title}</h5>
-                            <p>${track.artist} ${bpmBadge}</p>
+                            <p>${track.artist}</p>
                         </div>
                     </div>
                     <div class="q-item-actions">
@@ -601,7 +579,7 @@
                     playQueueIndex(index >= playbackQueue.length ? 0 : index);
                 } else {
                     p1.pause(); p2.pause(); p1.src = ""; p2.src = "";
-                    setPlayState(false); currentQueueIndex = -1; isTransitioning = false;
+                    setPlayState(false); currentQueueIndex = -1; preloadedIndex = -1; isTransitioning = false;
                     document.body.classList.remove('music-is-playing');
                     document.getElementById('player-dock').classList.add('hidden');
                 }
@@ -757,7 +735,11 @@
         document.addEventListener('click', () => { document.querySelectorAll('.playlist-dropdown-menu').forEach(menu => menu.style.display = 'none'); });
 
         function refreshAllTrackCards() {
-            if (currentPlaylist.length === 0) return; const grid = document.getElementById('music-grid'); grid.innerHTML = "";
+            const grid = document.getElementById('music-grid');
+            if (!grid) return;
+            if (currentPlaylist.length === 0) return;
+            
+            grid.innerHTML = "";
             currentPlaylist.forEach((song) => {
                 const card = document.createElement('div'); card.className = 'grid-card'; card.dataset.id = song.id;
                 let menuOptions = Object.keys(playlists).map(pName => `<div class="dropdown-item" onclick="addTrackToPlaylist(${song.id}, '${pName.replace(/'/g, "\\'")}', event)">Add to ${pName}</div>`).join('');
@@ -770,7 +752,7 @@
 
         window.playQueueIndex = function(qIndex) {
             if (qIndex < 0 || qIndex >= playbackQueue.length) return;
-            isTransitioning = false; // Force stop execution lines of any running overlaps
+            isTransitioning = false; 
             currentQueueIndex = qIndex;
             loadTrackByPlaylistIndex(playbackQueue[currentQueueIndex]);
         };
@@ -784,7 +766,6 @@
         nextBtn.addEventListener('click', () => { playQueueIndex(currentQueueIndex < playbackQueue.length - 1 ? currentQueueIndex + 1 : 0); });
         prevBtn.addEventListener('click', () => { if (player.currentTime > 3) { player.currentTime = 0; } else { playQueueIndex(currentQueueIndex > 0 ? currentQueueIndex - 1 : playbackQueue.length - 1); } });
 
-        // HOOK TIMELINE MONITOR EVENTS TO BOTH PIPELINE STATIONS
         const handlePlaybackTimeUpdate = () => {
             monitorPlaybackTimeline();
             if (!player.duration || player.paused) return;
@@ -799,7 +780,6 @@
         p1.addEventListener('loadedmetadata', () => { if (player === p1) timeDuration.innerText = formatTime(p1.duration); });
         p2.addEventListener('loadedmetadata', () => { if (player === p2) timeDuration.innerText = formatTime(p2.duration); });
 
-        // Fallback safety triggers if crossfading options are turned off entirely
         p1.addEventListener('ended', () => { if (player === p1 && !isTransitioning) nextBtn.click(); });
         p2.addEventListener('ended', () => { if (player === p2 && !isTransitioning) nextBtn.click(); });
 
@@ -820,10 +800,50 @@
             }
         }
 
+        // METADATA PARSING & SANITIZATION LAYER
+        function sanitizeTrackMetadata(song) {
+            if (!song) return;
+
+            const separators = [' - ', ' – ', ' — ', ' _ '];
+            let foundSeparator = null;
+
+            for (let sep of separators) {
+                if (song.title.includes(sep)) {
+                    foundSeparator = sep;
+                    break;
+                }
+            }
+
+            // Splitting logic for nested attributes
+            if (foundSeparator) {
+                const parts = song.title.split(foundSeparator);
+                const guessedArtist = parts[0].trim();
+                const guessedTitle = parts[1].trim();
+
+                if (!song.artist || song.artist.toLowerCase() === 'unknown artist') {
+                    song.artist = guessedArtist;
+                    song.title = guessedTitle;
+                }
+            } 
+            else if (!song.artist || song.artist.toLowerCase() === 'unknown artist') {
+                song.title = song.title.replace(/_/g, ' ').trim();
+            }
+        }
+
+        // FETCH INITIALIZATION RUNTIME
         fetch('/api/playlist?t=' + Date.now())
             .then(res => res.json())
-            .then(songs => { currentPlaylist = songs; refreshAllTrackCards(); renderPlaylistsUI(); })
-            .catch(() => { document.getElementById('music-grid').innerHTML = "<p class='empty-msg'>Failed to connect to streaming loop.</p>"; });
+            .then(songs => {
+                // Pass loaded elements through sanitization
+                songs.forEach(song => sanitizeTrackMetadata(song));
+                
+                currentPlaylist = songs; 
+                refreshAllTrackCards(); 
+                renderPlaylistsUI(); 
+            })
+            .catch(() => { 
+                document.getElementById('music-grid').innerHTML = "<p class='empty-msg'>Failed to connect to streaming loop.</p>"; 
+            });
     </script>
 </body>
 </html>
