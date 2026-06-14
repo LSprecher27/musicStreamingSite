@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liquid Glass Home</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="audio-engine-container">
+        <audio id="audio-player-1"></audio>
+        <audio id="audio-player-2"></audio>
+    </div>
+    <div id="dynamic-ambient-bg" class="ambient-bg"></div>
+    <div class="bg-overlay"></div>
+
+    <div class="app-container">
+        <header id="app-header" class="app-header">
+            <div class="header-left">
+                <h1>Listen Now</h1>
+                <p>Welcome back! Here is your music library.</p>
+            </div>
+            <div class="header-right-controls">
+                <button id="play-all-btn" class="pill-btn secondary">
+                    <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
+                    Play All
+                </button>
+                <button id="shuffle-btn" class="pill-btn primary">
+                    <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>
+                    Shuffle
+                </button>
+                <button id="toggle-queue-btn" class="pill-btn secondary icon-only" title="View Queue">
+                    <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M4 6h16v2H4zm0 5h16v2H4zm0 5h11v2H4zm14 0v-5h2v5zm-1 5l2-3 2 3z"/></svg>
+                </button>
+                <button id="toggle-settings-btn" class="pill-btn secondary icon-only" title="Settings">
+                    <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3-1.07-3-3.5s1.07-3.5 3-3.5 3 1.07 3 3.5-1.07 3.5-3 3.5z"/></svg>
+                </button>
+            </div>
+        </header>
+
+        <div class="main-layout-wrapper">
+            <main class="main-content">
+                
+                <div id="dashboard-view">
+                    <section class="grid-section">
+                        <h3>All Tracks</h3>
+                        <div id="music-grid" class="music-grid">
+                            </div>
+                    </section>
+
+                    <hr class="section-divider">
+
+                    <section class="grid-section playlist-section">
+                        <div class="section-header-row">
+                            <h3>Your Playlists</h3>
+                            <button id="create-playlist-btn" class="pill-btn secondary small">+ Create Playlist</button>
+                        </div>
+                        <div id="playlists-grid" class="music-grid">
+                            </div>
+                    </section>
+                </div>
+
+                <div id="playlist-detail-view" class="playlist-detail-view hidden-view">
+                    <div class="playlist-detail-header">
+                        <button id="playlist-back-btn" class="back-text-btn">
+                            <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                            Back to Library
+                        </button>
+                        <div class="playlist-header-main">
+                            <div class="p-detail-art-wrapper" onclick="triggerArtUpload()" title="Upload Custom Artwork">
+                                <img id="p-detail-art" src="https://placehold.co/500x500/282828/aaaaaa?text=Empty" alt="Playlist Cover">
+                                <div class="art-upload-overlay">
+                                    <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z"/></svg>
+                                    <span>Upload Art</span>
+                                </div>
+                            </div>
+                            <input type="file" id="playlist-art-input" accept="image/*" style="display: none;" onchange="handleArtUpload(event)">
+                            
+                            <div class="p-header-text">
+                                <span class="p-badge">PLAYLIST</span>
+                                <h2 id="p-detail-title">Playlist Name</h2>
+                                <p id="p-detail-meta">0 tracks</p>
+                                <div class="p-action-row">
+                                    <button id="p-play-btn" class="pill-btn primary">
+                                        <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M8 5v14l11-7z"/></svg> Play
+                                    </button>
+                                    <button id="p-shuffle-btn" class="pill-btn secondary">
+                                        <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg> Shuffle
+                                    </button>
+                                    <button id="p-delete-btn" class="pill-btn danger-outline">Delete Playlist</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="playlist-tracks-table">
+                        <div class="table-header-row">
+                            <span class="col-num">#</span>
+                            <span class="col-title">Title</span>
+                            <span class="col-artist">Artist</span>
+                            <span class="col-actions"></span>
+                        </div>
+                        <div id="playlist-tracks-list" class="table-body">
+                            </div>
+                    </div>
+                </div>
+
+                <div id="settings-view" class="playlist-detail-view hidden-view">
+                    <div class="playlist-detail-header">
+                        <button id="settings-back-btn" class="back-text-btn">
+                            <svg viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                            Back to Library
+                        </button>
+                        <div class="playlist-header-main">
+                            <div class="p-header-text">
+                                <span class="p-badge">SYSTEM</span>
+                                <h2>Settings</h2>
+                                <p>Configure your application options.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-panel-card">
+                        <div class="settings-group-title">Audio Engine Parameters</div>
+                        
+                        <div class="settings-row">
+                            <div class="settings-info">
+                                <label for="setting-crossfade-toggle">Seamless Transition (Crossfade)</label>
+                                <span class="settings-desc">Enables overlapping audio between songs as the current track comes to a close.</span>
+                            </div>
+                            <label class="switch-toggle">
+                                <input type="checkbox" id="setting-crossfade-toggle">
+                                <span class="switch-slider"></span>
+                            </label>
+                        </div>
+
+                        <div id="crossfade-suboptions" class="settings-sub-panel hidden-element">
+                            <div class="settings-row">
+                                <div class="settings-info">
+                                    <label for="setting-crossfade-duration">Transition Duration</label>
+                                    <span class="settings-desc">Sets how long songs blend into one another (<span id="cf-duration-val">6</span>s).</span>
+                                </div>
+                                <input type="range" id="setting-crossfade-duration" min="2" max="15" value="6" class="settings-slider">
+                            </div>
+
+                            <div class="settings-row">
+                                <div class="settings-info">
+                                    <label for="setting-bpm-toggle">Intelligent Tempo Matching (BPM Match)</label>
+                                    <span class="settings-desc">Dynamically curves the playback speed of the fading track to match the speed of the incoming song.</span>
+                                </div>
+                                <label class="switch-toggle">
+                                    <input type="checkbox" id="setting-bpm-toggle" checked>
+                                    <span class="switch-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+
+            <aside id="queue-drawer" class="queue-drawer hidden-drawer">
+                <div class="drawer-header">
+                    <h3>Play Queue</h3>
+                    <button id="clear-queue-btn" class="text-action-btn">Clear</button>
+                </div>
+                <div id="queue-items-list" class="queue-items-list">
+                    </div>
+            </aside>
+        </div>
+
+        <footer id="player-dock" class="player-dock hidden">
+            <div class="dock-content">
+                <div id="dock-meta-trigger" class="dock-track-info clickable-trigger" title="Expand view">
+                    <img id="album-art" src="https://placehold.co/50x50/282828/aaaaaa?text=" alt="Art">
+                    <div class="dock-text">
+                        <div class="title-row">
+                            <span id="song-title">Song Title</span>
+                            <span id="explicit-badge" class="badge hidden">E</span>
+                        </div>
+                        <span id="song-artist">Artist Name</span>
+                    </div>
+                </div>
+
+                <div id="dock-controls" class="dock-controls">
+                    <div class="control-buttons-group">
+                        <button id="prev-btn" class="control-btn skip-btn">
+                            <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+                        </button>
+                        <button id="play-btn" class="control-btn main-play">
+                            <svg id="play-icon" viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
+                            <svg id="pause-icon" class="hidden-element" viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                        </button>
+                        <button id="next-btn" class="control-btn skip-btn">
+                            <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M6 18l8.5-6L6 6zm9-12v12h2V6z"/></svg>
+                        </button>
+                    </div>
+
+                    <div class="progress-timeline">
+                        <span id="time-current" class="time-stamp">0:00</span>
+                        <div id="progress-container" class="progress-bar-container">
+                            <div id="progress-fill" class="progress-bar-fill"></div>
+                        </div>
+                        <span id="time-duration" class="time-stamp">0:00</span>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <div id="fullscreen-overlay" class="fullscreen-player-overlay hidden-overlay">
+        <button id="close-overlay-btn" class="close-overlay-btn">
+            <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+
+        <div class="fullscreen-content-wrapper">
+            <div class="fullscreen-left-panel">
+                <img id="fs-album-art" src="" alt="Album Artwork">
+                <div class="fs-meta-block">
+                    <h2 id="fs-song-title">Song Title</h2>
+                    <p id="fs-song-artist">Artist Name</p>
+                </div>
+                <div id="fs-controls-mount" class="fs-controls-mount"></div>
+            </div>
+
+            <div class="fullscreen-right-panel">
+                <div class="lyrics-container">
+                    <div id="lyrics-contents" class="lyrics-contents"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="playlist-modal" class="modal-overlay hidden-element">
+        <div class="modal-card">
+            <h3>Create Playlist</h3>
+            <p>Give your new collection a memorable title.</p>
+            
+            <div class="modal-input-group">
+                <input type="text" id="modal-playlist-name" placeholder="My Awesome Mix" autocomplete="off">
+                <span id="modal-error-msg" class="modal-error-text"></span>
+            </div>
+
+            <div class="modal-actions">
+                <button id="modal-cancel-btn" class="pill-btn secondary">Cancel</button>
+                <button id="modal-submit-btn" class="pill-btn primary">Create</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPlaylist = [];
+        let playbackQueue = []; 
+        let currentQueueIndex = -1;
+        let playlists = JSON.parse(localStorage.getItem('glass_playlists')) || {};
+
+        // ENGINE APP STATE ENGINE VARIABLES
+        let crossfadeEnabled = localStorage.getItem('glass_cf_enabled') === 'true';
+        let crossfadeDuration = parseInt(localStorage.getItem('glass_cf_duration')) || 6;
+        let bpmMatchEnabled = localStorage.getItem('glass_bpm_enabled') !== 'false'; // default true
+        let isTransitioning = false;
+
+        // DUAL ENGINE DOM PICKER REFERENCE LAYER
+        const p1 = document.getElementById('audio-player-1');
+        const p2 = document.getElementById('audio-player-2');
+        let player = p1; // Active structural target variable reference node pointing to current active player
+
+        const playBtn = document.getElementById('play-btn');
+        const playIcon = document.getElementById('play-icon');
+        const pauseIcon = document.getElementById('pause-icon');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const playAllBtn = document.getElementById('play-all-btn');
+        const shuffleBtn = document.getElementById('shuffle-btn');
+        const progressContainer = document.getElementById('progress-container');
+        const progressFill = document.getElementById('progress-fill');
+        const timeCurrent = document.getElementById('time-current');
+        const timeDuration = document.getElementById('time-duration');
+        
+        const dockMetaTrigger = document.getElementById('dock-meta-trigger');
+        const fullscreenOverlay = document.getElementById('fullscreen-overlay');
+        const closeOverlayBtn = document.getElementById('close-overlay-btn');
+        const dockControls = document.getElementById('dock-controls');
+        const fsControlsMount = document.getElementById('fs-controls-mount');
+        const dockContentWrapper = document.querySelector('.dock-content');
+
+        const toggleQueueBtn = document.getElementById('toggle-queue-btn');
+        const queueDrawer = document.getElementById('queue-drawer');
+        const queueItemsList = document.getElementById('queue-items-list');
+        const clearQueueBtn = document.getElementById('clear-queue-btn');
+        const createPlaylistBtn = document.getElementById('create-playlist-btn');
+        const playlistsGrid = document.getElementById('playlists-grid');
+
+        const dashboardView = document.getElementById('dashboard-view');
+        const playlistDetailView = document.getElementById('playlist-detail-view');
+        const playlistBackBtn = document.getElementById('playlist-back-btn');
+        const appHeader = document.getElementById('app-header');
+
+        const toggleSettingsBtn = document.getElementById('toggle-settings-btn');
+        const settingsView = document.getElementById('settings-view');
+        const settingsBackBtn = document.getElementById('settings-back-btn');
+        
+        const playlistModal = document.getElementById('playlist-modal');
+        const modalInput = document.getElementById('modal-playlist-name');
+        const modalError = document.getElementById('modal-error-msg');
+        const modalCancelBtn = document.getElementById('modal-cancel-btn');
+        const modalSubmitBtn = document.getElementById('modal-submit-btn');
+
+        // SETTINGS INPUT FIELD ELEMENT CONNECTIONS
+        const cfToggleInput = document.getElementById('setting-crossfade-toggle');
+        const cfDurationInput = document.getElementById('setting-crossfade-duration');
+        const cfDurationVal = document.getElementById('setting-crossfade-duration');
+        const cfDurationLabel = document.getElementById('cf-duration-val');
+        const bpmToggleInput = document.getElementById('setting-bpm-toggle');
+        const cfSubOptions = document.getElementById('crossfade-suboptions');
+
+        let activePlaylistName = null;
+
+        // INITIALIZE SETTINGS INTERFACE CONTROLS VALUES FROM CACHE STATE ENGINE
+        cfToggleInput.checked = crossfadeEnabled;
+        cfDurationInput.value = crossfadeDuration;
+        cfDurationLabel.innerText = crossfadeDuration;
+        bpmToggleInput.checked = bpmMatchEnabled;
+        if (crossfadeEnabled) cfSubOptions.classList.remove('hidden-element');
+
+        // EVENT INTERFACES FOR SETTINGS ROUTING PANEL CHANGES
+        cfToggleInput.addEventListener('change', (e) => {
+            crossfadeEnabled = e.target.checked;
+            localStorage.setItem('glass_cf_enabled', crossfadeEnabled);
+            if (crossfadeEnabled) {
+                cfSubOptions.classList.remove('hidden-element');
+            } else {
+                cfSubOptions.classList.add('hidden-element');
+            }
+        });
+
+        cfDurationInput.addEventListener('input', (e) => {
+            crossfadeDuration = parseInt(e.target.value);
+            cfDurationLabel.innerText = crossfadeDuration;
+            localStorage.setItem('glass_cf_duration', crossfadeDuration);
+        });
+
+        bpmToggleInput.addEventListener('change', (e) => {
+            bpmMatchEnabled = e.target.checked;
+            localStorage.setItem('glass_bpm_enabled', bpmMatchEnabled);
+        });
+
+        toggleQueueBtn.addEventListener('click', () => {
+            queueDrawer.classList.toggle('hidden-drawer');
+            toggleQueueBtn.classList.toggle('primary');
+        });
+
+        clearQueueBtn.addEventListener('click', () => {
+            p1.pause(); p2.pause();
+            p1.src = ""; p2.src = "";
+            setPlayState(false);
+            playbackQueue = [];
+            currentQueueIndex = -1;
+            isTransitioning = false;
+            
+            document.body.classList.remove('music-is-playing');
+            document.getElementById('player-dock').classList.add('hidden');
+            renderQueueUI();
+            updateGridHighlights(-1);
+        });
+
+        toggleSettingsBtn.addEventListener('click', () => {
+            dashboardView.classList.add('hidden-view');
+            playlistDetailView.classList.add('hidden-view');
+            appHeader.classList.add('hidden-view');
+            settingsView.classList.remove('hidden-view');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        function navigateToDashboardFromSettings() {
+            settingsView.classList.add('hidden-view');
+            dashboardView.classList.remove('hidden-view');
+            appHeader.classList.remove('hidden-view');
+        }
+
+        settingsBackBtn.addEventListener('click', navigateToDashboardFromSettings);
+
+        function openCreatePlaylistModal() {
+            modalInput.value = "";
+            modalError.innerText = "";
+            modalError.classList.remove('visible-error');
+            playlistModal.classList.remove('hidden-element');
+            modalInput.focus();
+        }
+
+        function closeCreatePlaylistModal() {
+            playlistModal.classList.add('hidden-element');
+        }
+
+        function submitNewPlaylist() {
+            const name = modalInput.value.trim();
+            if (!name) { modalError.innerText = "Playlist name cannot be empty."; modalError.classList.add('visible-error'); return; }
+            if (playlists[name]) { modalError.innerText = "A playlist with that name already exists."; modalError.classList.add('visible-error'); return; }
+            playlists[name] = { tracks: [], customArt: null };
+            savePlaylists(); renderPlaylistsUI(); refreshAllTrackCards(); closeCreatePlaylistModal();
+        }
+
+        createPlaylistBtn.addEventListener('click', openCreatePlaylistModal);
+        modalCancelBtn.addEventListener('click', closeCreatePlaylistModal);
+        modalSubmitBtn.addEventListener('click', submitNewPlaylist);
+
+        modalInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') submitNewPlaylist();
+            else { modalError.classList.remove('visible-error'); }
+        });
+
+        playlistModal.addEventListener('click', (e) => {
+            if (e.target === playlistModal) closeCreatePlaylistModal();
+        });
+
+        function savePlaylists() { localStorage.setItem('glass_playlists', JSON.stringify(playlists)); }
+
+        // CORE INTUATIVE DECOUPLED TRACK LAUNCH LAYER ENGINE
+        function loadTrackByPlaylistIndex(id, targetPlayer = null) {
+            const track = currentPlaylist.find(t => t.id === id);
+            if (!track) return;
+
+            // If an explicit deck target isn't specified, fall back to standard core active node reference selection
+            const activePlayerDeck = targetPlayer || player;
+
+            document.getElementById('player-dock').classList.remove('hidden');
+            document.body.classList.add('music-is-playing');
+            
+            // Only update track metadata layout views if loading data into the core focused player channel line 
+            if (activePlayerDeck === player) {
+                document.getElementById('song-title').innerText = track.title;
+                document.getElementById('song-artist').innerText = track.artist;
+                document.getElementById('fs-song-title').innerText = track.title;
+                document.getElementById('fs-song-artist').innerText = track.artist;
+
+                const artUrl = window.location.origin + `/album-art?id=${track.id}&t=` + Date.now();
+                document.getElementById('album-art').src = artUrl;
+                document.getElementById('fs-album-art').src = artUrl;
+                document.getElementById('dynamic-ambient-bg').style.backgroundImage = `url('${artUrl}')`;
+                fetchLyrics(track.filename);
+            }
+
+            activePlayerDeck.src = `/stream-music?id=${track.id}`;
+            activePlayerDeck.volume = 1.0;
+            activePlayerDeck.playbackRate = 1.0; // Reset tempo back to 100% flat standard baseline speed values
+
+            activePlayerDeck.play()
+                .then(() => {
+                    if (activePlayerDeck === player) {
+                        setPlayState(true);
+                        updateMobileMediaSession(track, window.location.origin + `/album-art?id=${track.id}`);
+                    }
+                })
+                .catch(() => { if (activePlayerDeck === player) setPlayState(false); });
+
+            renderQueueUI();
+            updateGridHighlights(id);
+        }
+
+        // SEAMLESS INTEGRATED CONTINUOUS MONITOR DECK SCHEDULER CROSSFADER
+        function monitorPlaybackTimeline() {
+            if (!player.duration || isTransitioning || !crossfadeEnabled) return;
+
+            const timeRemaining = player.duration - player.currentTime;
+
+            // Trigger the upcoming sequence when remaining playback seconds matches crossfade settings threshold
+            if (timeRemaining <= crossfadeDuration && currentQueueIndex < playbackQueue.length - 1) {
+                triggerCrossfadeSequence();
+            }
+        }
+
+        function triggerCrossfadeSequence() {
+            isTransitioning = true;
+
+            // Alternate operational lines cleanly
+            const outgoingPlayer = player;
+            const incomingPlayer = (player === p1) ? p2 : p1;
+            
+            const nextQueueIndex = currentQueueIndex + 1;
+            const nextTrackId = playbackQueue[nextQueueIndex];
+            
+            const currentTrack = currentPlaylist.find(t => t.id === playbackQueue[currentQueueIndex]);
+            const nextTrack = currentPlaylist.find(t => t.id === nextTrackId);
+
+            // Compute structural playback acceleration adjustments if BPM attributes exist on tracking files
+            if (bpmMatchEnabled && currentTrack && nextTrack && currentTrack.bpm && nextTrack.bpm) {
+                const targetRatio = nextTrack.bpm / currentTrack.bpm;
+                // Soft cap limits to filter out erratic acceleration anomalies 
+                const clampedRatio = Math.max(0.85, Math.min(1.15, targetRatio));
+                
+                // Curve the outgoing playback rate to synchronize matching grids linearly before structural termination
+                outgoingPlayer.playbackRate = clampedRatio;
+            }
+
+            // Fire and load the incoming alternate pipeline channel
+            currentQueueIndex = nextQueueIndex;
+            loadTrackByPlaylistIndex(nextTrackId, incomingPlayer);
+            incomingPlayer.volume = 0.0;
+
+            const fadeIntervalDuration = 100; // Step adjustments happen every 100 milliseconds
+            const totalSteps = (crossfadeDuration * 1000) / fadeIntervalDuration;
+            let currentStep = 0;
+
+            const fadeTimer = setInterval(() => {
+                currentStep++;
+                const progressRatio = currentStep / totalSteps;
+
+                // Adjust volume tracks linearly along opposing scale arrays
+                outgoingPlayer.volume = Math.max(0, 1 - progressRatio);
+                incomingPlayer.volume = Math.min(1, progressRatio);
+
+                if (currentStep >= totalSteps) {
+                    clearInterval(fadeTimer);
+                    
+                    outgoingPlayer.pause();
+                    outgoingPlayer.src = "";
+                    outgoingPlayer.volume = 1.0;
+                    outgoingPlayer.playbackRate = 1.0;
+
+                    // Promote the incoming track node back into primary focus control routing assignment configurations
+                    player = incomingPlayer;
+                    isTransitioning = false;
+
+                    // Update layouts safely to sync focused channel states 
+                    if (nextTrack) {
+                        document.getElementById('song-title').innerText = nextTrack.title;
+                        document.getElementById('song-artist').innerText = nextTrack.artist;
+                        document.getElementById('fs-song-title').innerText = nextTrack.title;
+                        document.getElementById('fs-song-artist').innerText = nextTrack.artist;
+                        const artUrl = window.location.origin + `/album-art?id=${nextTrack.id}`;
+                        document.getElementById('album-art').src = artUrl;
+                        document.getElementById('fs-album-art').src = artUrl;
+                        document.getElementById('dynamic-ambient-bg').style.backgroundImage = `url('${artUrl}')`;
+                        fetchLyrics(nextTrack.filename);
+                    }
+                }
+            }, fadeIntervalDuration);
+        }
+
+        function updateGridHighlights(activeId) {
+            document.querySelectorAll('.grid-card').forEach((card) => {
+                if (parseInt(card.dataset.id) === activeId) card.classList.add('playing-now');
+                else card.classList.remove('playing-now');
+            });
+            document.querySelectorAll('.table-row').forEach((row) => {
+                if (parseInt(row.dataset.id) === activeId) row.classList.add('playing-row');
+                else row.classList.remove('playing-row');
+            });
+        }
+
+        function renderQueueUI() {
+            queueItemsList.innerHTML = "";
+            if (playbackQueue.length === 0) {
+                queueItemsList.innerHTML = "<p class='empty-queue-msg'>Queue is empty</p>";
+                return;
+            }
+
+            playbackQueue.forEach((trackId, idx) => {
+                const track = currentPlaylist.find(t => t.id === trackId);
+                if (!track) return;
+
+                const qItem = document.createElement('div');
+                qItem.className = `queue-item ${idx === currentQueueIndex ? 'active-q-item' : ''}`;
+                
+                // Render custom context line with metadata badge parameters if server provides bpm values
+                const bpmBadge = track.bpm ? `<span class="queue-bpm-badge">${track.bpm} BPM</span>` : '';
+
+                qItem.innerHTML = `
+                    <div class="q-item-meta" onclick="playQueueIndex(${idx})">
+                        <img src="/album-art?id=${track.id}" alt="Art">
+                        <div class="q-item-text">
+                            <h5>${track.title}</h5>
+                            <p>${track.artist} ${bpmBadge}</p>
+                        </div>
+                    </div>
+                    <div class="q-item-actions">
+                        <button class="q-move-btn" onclick="moveQueueItem(${idx}, -1)" ${idx === 0 ? 'disabled' : ''}>▲</button>
+                        <button class="q-move-btn" onclick="moveQueueItem(${idx}, 1)" ${idx === playbackQueue.length - 1 ? 'disabled' : ''}>▼</button>
+                        <button class="q-remove-btn" onclick="removeQueueItem(${idx})">×</button>
+                    </div>
+                `;
+                queueItemsList.appendChild(qItem);
+            });
+        }
+
+        window.moveQueueItem = function(index, direction) {
+            const targetIndex = index + direction;
+            if (targetIndex < 0 || targetIndex >= playbackQueue.length) return;
+            const temp = playbackQueue[index];
+            playbackQueue[index] = playbackQueue[targetIndex];
+            playbackQueue[targetIndex] = temp;
+            if (currentQueueIndex === index) currentQueueIndex = targetIndex;
+            else if (currentQueueIndex === targetIndex) currentQueueIndex = index;
+            renderQueueUI();
+        };
+
+        window.removeQueueItem = function(index) {
+            playbackQueue.splice(index, 1);
+            if (currentQueueIndex === index) {
+                if (playbackQueue.length > 0) {
+                    playQueueIndex(index >= playbackQueue.length ? 0 : index);
+                } else {
+                    p1.pause(); p2.pause(); p1.src = ""; p2.src = "";
+                    setPlayState(false); currentQueueIndex = -1; isTransitioning = false;
+                    document.body.classList.remove('music-is-playing');
+                    document.getElementById('player-dock').classList.add('hidden');
+                }
+            } else if (currentQueueIndex > index) {
+                currentQueueIndex--;
+            }
+            renderQueueUI();
+        };
+
+        window.addToQueueDirect = function(trackId, event) {
+            event.stopPropagation();
+            playbackQueue.push(trackId);
+            if (currentQueueIndex === -1) {
+                currentQueueIndex = 0;
+                loadTrackByPlaylistIndex(trackId);
+            }
+            renderQueueUI();
+            const btn = event.currentTarget;
+            const origHTML = btn.innerHTML;
+            btn.innerHTML = "✓";
+            setTimeout(() => { btn.innerHTML = origHTML; }, 1000);
+        };
+
+        window.addTrackToPlaylist = function(trackId, playlistName, event) {
+            event.stopPropagation();
+            let targetPlaylist = playlists[playlistName];
+            if (Array.isArray(targetPlaylist)) { playlists[playlistName] = { tracks: targetPlaylist, customArt: null }; targetPlaylist = playlists[playlistName]; }
+            if (!targetPlaylist.tracks.includes(trackId)) {
+                targetPlaylist.tracks.push(trackId);
+                savePlaylists(); renderPlaylistsUI();
+                if (activePlaylistName === playlistName) renderPlaylistDetailPage(playlistName);
+                alert(`Added to ${playlistName}!`);
+            } else { alert("Track is already in this playlist."); }
+            event.currentTarget.closest('.playlist-dropdown-menu').style.display = 'none';
+        };
+
+        window.togglePlaylistDropdown = function(trackId, event) {
+            event.stopPropagation();
+            document.querySelectorAll('.playlist-dropdown-menu').forEach(menu => { if(menu.id !== `dropdown-${trackId}`) menu.style.display = 'none'; });
+            const targetMenu = document.getElementById(`dropdown-${trackId}`);
+            targetMenu.style.display = (targetMenu.style.display === 'block') ? 'none' : 'block';
+        };
+
+        window.playPlaylist = function(playlistName) {
+            const playlistObj = playlists[playlistName];
+            const trackIds = playlistObj ? (playlistObj.tracks || playlistObj) : [];
+            if (!trackIds || trackIds.length === 0) { alert("This playlist has no songs yet!"); return; }
+            playbackQueue = [...trackIds];
+            playQueueIndex(0);
+        };
+
+        window.deletePlaylist = function(playlistName, event) {
+            if(event) event.stopPropagation();
+            if (confirm(`Are you sure you want to delete "${playlistName}"?`)) { delete playlists[playlistName]; savePlaylists(); renderPlaylistsUI(); refreshAllTrackCards(); navigateToDashboard(); }
+        };
+
+        window.openPlaylistPage = function(playlistName) {
+            activePlaylistName = playlistName; renderPlaylistDetailPage(playlistName);
+            dashboardView.classList.add('hidden-view'); appHeader.classList.add('hidden-view'); playlistDetailView.classList.remove('hidden-view');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        function navigateToDashboard() {
+            activePlaylistName = null; playlistDetailView.classList.add('hidden-view'); settingsView.classList.add('hidden-view'); dashboardView.classList.remove('hidden-view'); appHeader.classList.remove('hidden-view');
+        }
+
+        playlistBackBtn.addEventListener('click', navigateToDashboard);
+
+        window.triggerArtUpload = function() { document.getElementById('playlist-art-input').click(); };
+
+        window.handleArtUpload = function(event) {
+            const file = event.target.files[0]; if (!file) return;
+            if (file.size > 2 * 1024 * 1024) { alert("Image is too large! Please choose an artwork under 2MB."); return; }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                if (playlists[activePlaylistName]) { playlists[activePlaylistName].customArt = e.target.result; savePlaylists(); document.getElementById('p-detail-art').src = e.target.result; renderPlaylistsUI(); }
+            };
+            reader.readAsDataURL(file);
+        };
+
+        function getPlaylistArtworkUrl(playlistObj) {
+            if (playlistObj && playlistObj.customArt) return playlistObj.customArt;
+            const trackIds = playlistObj ? (playlistObj.tracks || playlistObj) : [];
+            if (Array.isArray(trackIds) && trackIds.length > 0) return `/album-art?id=${trackIds[0]}`;
+            return 'https://placehold.co/500x500/282828/aaaaaa?text=Empty';
+        }
+
+        function renderPlaylistDetailPage(playlistName) {
+            let playlistObj = playlists[playlistName];
+            if (Array.isArray(playlistObj)) { playlists[playlistName] = { tracks: playlistObj, customArt: null }; playlistObj = playlists[playlistName]; }
+            const trackIds = playlistObj ? playlistObj.tracks : [];
+            document.getElementById('p-detail-title').innerText = playlistName;
+            document.getElementById('p-detail-meta').innerText = `${trackIds.length} ${trackIds.length === 1 ? 'track' : 'tracks'}`;
+            document.getElementById('p-detail-art').src = getPlaylistArtworkUrl(playlistObj);
+            document.getElementById('p-play-btn').onclick = () => playPlaylist(playlistName);
+            document.getElementById('p-shuffle-btn').onclick = () => {
+                if (trackIds.length === 0) return alert("Playlist is empty!");
+                let indices = [...trackIds];
+                for (let i = indices.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [indices[i], indices[j]] = [indices[j], indices[i]]; }
+                playbackQueue = indices; playQueueIndex(0);
+            };
+            document.getElementById('p-delete-btn').onclick = () => deletePlaylist(playlistName);
+
+            const tracksListContainer = document.getElementById('playlist-tracks-list');
+            tracksListContainer.innerHTML = "";
+            if (trackIds.length === 0) { tracksListContainer.innerHTML = "<p class='empty-table-msg'>No songs in this playlist yet.</p>"; return; }
+
+            trackIds.forEach((id, index) => {
+                const song = currentPlaylist.find(t => t.id === id); if (!song) return;
+                const row = document.createElement('div'); row.className = 'table-row'; row.dataset.id = song.id;
+                row.innerHTML = `
+                    <span class="col-num">${index + 1}</span>
+                    <span class="col-title font-highlight">${song.title}</span>
+                    <span class="col-artist">${song.artist}</span>
+                    <span class="col-actions">
+                        <button class="table-action-btn" onclick="addToQueueDirect(${song.id}, event)">+</button>
+                        <button class="table-action-btn remove-indicator" onclick="removeTrackFromPlaylist('${playlistName.replace(/'/g, "\\'")}', ${index}, event)">×</button>
+                    </span>
+                `;
+                row.addEventListener('click', (e) => { if (e.target.closest('.table-action-btn')) return; playbackQueue = [...trackIds]; playQueueIndex(index); });
+                tracksListContainer.appendChild(row);
+            });
+            if (player.src) { const activeCard = currentPlaylist.find(t => player.src.includes(`id=${t.id}`)); if (activeCard) updateGridHighlights(activeCard.id); }
+        }
+
+        window.removeTrackFromPlaylist = function(playlistName, trackIndex, event) { event.stopPropagation(); playlists[playlistName].tracks.splice(trackIndex, 1); savePlaylists(); renderPlaylistsUI(); renderPlaylistDetailPage(playlistName); };
+
+        function renderPlaylistsUI() {
+            playlistsGrid.innerHTML = ""; const keys = Object.keys(playlists);
+            if (keys.length === 0) { playlistsGrid.innerHTML = "<p class='empty-msg'>No playlists created yet.</p>"; return; }
+            keys.forEach(pName => {
+                let playlistObj = playlists[pName]; if (Array.isArray(playlistObj)) { playlists[pName] = { tracks: playlistObj, customArt: null }; playlistObj = playlists[pName]; }
+                const trackCount = playlistObj.tracks.length; const artworkUrl = getPlaylistArtworkUrl(playlistObj);
+                const card = document.createElement('div'); card.className = 'grid-card playlist-card';
+                card.innerHTML = `<div class="card-art-wrapper"><img src="${artworkUrl}"><div class="play-overlay"><svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M8 5v14l11-7z"/></svg></div></div><div class="card-meta-row"><div class="card-info-block"><h4>${pName}</h4><p>${trackCount} tracks</p></div></div>`;
+                card.addEventListener('click', () => openPlaylistPage(pName)); playlistsGrid.appendChild(card);
+            });
+        }
+
+        function fetchLyrics(filename) {
+            const lyricsContainer = document.getElementById('lyrics-contents'); lyricsContainer.innerHTML = "<p class='lyric-loading'>Loading lyrics...</p>";
+            const textFilename = filename.substring(0, filename.lastIndexOf('.')) + '.txt';
+            fetch(`/music/${encodeURIComponent(textFilename)}?t=` + Date.now())
+                .then(res => { if (!res.ok) throw new Error(); return res.text(); })
+                .then(text => { lyricsContainer.innerHTML = text.split('\n').map(line => line.trim() === "" ? "<br>" : `<p class="lyric-line">${escapeHTML(line)}</p>`).join(''); })
+                .catch(() => { lyricsContainer.innerHTML = "<p class='lyric-missing'>Lyrics unmapped.</p>"; });
+        }
+
+        function escapeHTML(str) { return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+
+        dockMetaTrigger.addEventListener('click', () => { fsControlsMount.appendChild(dockControls); fullscreenOverlay.classList.remove('hidden-overlay'); });
+        closeOverlayBtn.addEventListener('click', () => { dockContentWrapper.appendChild(dockControls); fullscreenOverlay.classList.add('hidden-overlay'); });
+        document.addEventListener('click', () => { document.querySelectorAll('.playlist-dropdown-menu').forEach(menu => menu.style.display = 'none'); });
+
+        function refreshAllTrackCards() {
+            if (currentPlaylist.length === 0) return; const grid = document.getElementById('music-grid'); grid.innerHTML = "";
+            currentPlaylist.forEach((song) => {
+                const card = document.createElement('div'); card.className = 'grid-card'; card.dataset.id = song.id;
+                let menuOptions = Object.keys(playlists).map(pName => `<div class="dropdown-item" onclick="addTrackToPlaylist(${song.id}, '${pName.replace(/'/g, "\\'")}', event)">Add to ${pName}</div>`).join('');
+                if (menuOptions === "") menuOptions = `<div class="dropdown-item disabled-item">No playlists ready</div>`;
+                card.innerHTML = `<div class="card-art-wrapper"><img src="/album-art?id=${song.id}"><div class="play-overlay"><svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M8 5v14l11-7z"/></svg></div></div><div class="card-meta-row"><div class="card-info-block"><h4>${song.title}</h4><p>${song.artist}</p></div><div class="card-actions-wrapper"><button class="add-to-q-inline-btn" onclick="addToQueueDirect(${song.id}, event)">+</button><button class="playlist-menu-trigger-btn" onclick="togglePlaylistDropdown(${song.id}, event)">⋮</button><div id="dropdown-${song.id}" class="playlist-dropdown-menu">${menuOptions}</div></div></div>`;
+                card.addEventListener('click', (event) => { if (event.target.closest('.card-actions-wrapper')) return; playbackQueue = currentPlaylist.map(t => t.id); playQueueIndex(playbackQueue.indexOf(song.id)); });
+                grid.appendChild(card);
+            });
+        }
+
+        window.playQueueIndex = function(qIndex) {
+            if (qIndex < 0 || qIndex >= playbackQueue.length) return;
+            isTransitioning = false; // Force stop execution lines of any running overlaps
+            currentQueueIndex = qIndex;
+            loadTrackByPlaylistIndex(playbackQueue[currentQueueIndex]);
+        };
+
+        function setPlayState(isPlaying) {
+            if (isPlaying) { playIcon.classList.add('hidden-element'); pauseIcon.classList.remove('hidden-element'); if ('mediaSession' in navigator) navigator.mediaSession.playbackState = "playing"; }
+            else { playIcon.classList.remove('hidden-element'); pauseIcon.classList.add('hidden-element'); if ('mediaSession' in navigator) navigator.mediaSession.playbackState = "paused"; }
+        }
+
+        playBtn.addEventListener('click', () => { if (player.paused) { player.play().then(() => setPlayState(true)); } else { player.pause(); setPlayState(false); } });
+        nextBtn.addEventListener('click', () => { playQueueIndex(currentQueueIndex < playbackQueue.length - 1 ? currentQueueIndex + 1 : 0); });
+        prevBtn.addEventListener('click', () => { if (player.currentTime > 3) { player.currentTime = 0; } else { playQueueIndex(currentQueueIndex > 0 ? currentQueueIndex - 1 : playbackQueue.length - 1); } });
+
+        // HOOK TIMELINE MONITOR EVENTS TO BOTH PIPELINE STATIONS
+        const handlePlaybackTimeUpdate = () => {
+            monitorPlaybackTimeline();
+            if (!player.duration || player.paused) return;
+            const percentage = (player.currentTime / player.duration) * 100;
+            progressFill.style.width = `${percentage}%`;
+            timeCurrent.innerText = formatTime(player.currentTime);
+        };
+
+        p1.addEventListener('timeupdate', () => { if (player === p1) handlePlaybackTimeUpdate(); });
+        p2.addEventListener('timeupdate', () => { if (player === p2) handlePlaybackTimeUpdate(); });
+
+        p1.addEventListener('loadedmetadata', () => { if (player === p1) timeDuration.innerText = formatTime(p1.duration); });
+        p2.addEventListener('loadedmetadata', () => { if (player === p2) timeDuration.innerText = formatTime(p2.duration); });
+
+        // Fallback safety triggers if crossfading options are turned off entirely
+        p1.addEventListener('ended', () => { if (player === p1 && !isTransitioning) nextBtn.click(); });
+        p2.addEventListener('ended', () => { if (player === p2 && !isTransitioning) nextBtn.click(); });
+
+        playAllBtn.addEventListener('click', () => { if (currentPlaylist.length === 0) return; playbackQueue = currentPlaylist.map(t => t.id); playQueueIndex(0); });
+        shuffleBtn.addEventListener('click', () => { if (currentPlaylist.length === 0) return; let indices = currentPlaylist.map(t => t.id); for (let i = indices.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [indices[i], indices[j]] = [indices[j], indices[i]]; } playbackQueue = indices; playQueueIndex(0); });
+
+        function formatTime(secs) { if (isNaN(secs)) return "0:00"; const m = Math.floor(secs / 60); const s = Math.floor(secs % 60); return `${m}:${s < 10 ? '0' : ''}${s}`; }
+
+        progressContainer.addEventListener('click', (e) => { if (!player.duration) return; const rect = progressContainer.getBoundingClientRect(); player.currentTime = ((e.clientX - rect.left) / rect.width) * player.duration; });
+
+        function updateMobileMediaSession(track, artworkUrl) {
+            if ('mediaSession' in navigator) {
+                navigator.mediaSession.metadata = new MediaMetadata({ title: track.title, artist: track.artist, album: "Local Library", artwork: [{ src: artworkUrl, sizes: '512x512', type: 'image/jpeg' }] });
+                navigator.mediaSession.setActionHandler('play', () => { player.play().then(() => setPlayState(true)); });
+                navigator.mediaSession.setActionHandler('pause', () => { player.pause(); setPlayState(false); });
+                navigator.mediaSession.setActionHandler('previoustrack', () => { prevBtn.click(); });
+                navigator.mediaSession.setActionHandler('nexttrack', () => { nextBtn.click(); });
+            }
+        }
+
+        fetch('/api/playlist?t=' + Date.now())
+            .then(res => res.json())
+            .then(songs => { currentPlaylist = songs; refreshAllTrackCards(); renderPlaylistsUI(); })
+            .catch(() => { document.getElementById('music-grid').innerHTML = "<p class='empty-msg'>Failed to connect to streaming loop.</p>"; });
+    </script>
+</body>
+</html>
