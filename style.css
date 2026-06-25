@@ -766,3 +766,110 @@ input:checked + .switch-slider:before {
     justify-content: flex-start; /* Keeps search left-aligned to match the hero card, change to 'center' if you want the search bar right in the middle */
     margin-bottom: 30px;
 }
+/* ==========================================
+   MOBILE & PWA OPTIMIZATION OVERRIDES
+   ========================================== */
+@media (max-width: 768px) {
+    /* Reset dashboard padding for edge-to-edge screen space */
+    #dashboard-view {
+        padding: 16px !important;
+        max-width: 100% !important;
+        overflow-x: hidden;
+    }
+
+    /* Stack main sections vertically */
+    .ranked-recommendations-layout {
+        grid-template-columns: 1fr !important;
+        gap: 24px !important;
+    }
+
+    /* Keep the main standard grid clean as a compact 2-column layout */
+    #music-grid:not(.ranked-recommendations-layout), .grid-layout {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important;
+        gap: 12px !important;
+    }
+
+    /* Target ONLY the subsequent list-style cards in the side stack */
+    #music-grid.ranked-recommendations-layout .recommendations-side-stack {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 10px !important;
+    }
+
+    #music-grid.ranked-recommendations-layout .recommendations-side-stack .grid-card.rank-subsequent {
+        display: flex !important;
+        flex-direction: row !important; /* Safely turns ONLY secondary items into list rows */
+        align-items: center !important;
+        width: 100% !important;
+        height: 72px !important; /* Perfect fixed row size */
+        padding: 8px 12px !important;
+        background: rgba(255, 255, 255, 0.04) !important;
+        border-radius: 8px !important;
+        border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    }
+
+    /* Scale the artwork for list row variants beautifully */
+    #music-grid.ranked-recommendations-layout .recommendations-side-stack .grid-card.rank-subsequent img {
+        width: 54px !important;
+        height: 54px !important;
+        min-width: 54px !important;
+        aspect-ratio: 1 / 1 !important;
+        object-fit: cover !important;
+        border-radius: 6px !important;
+        margin-bottom: 0 !important;
+        margin-right: 14px !important;
+    }
+
+    /* Align text column properly inside rows */
+    #music-grid.ranked-recommendations-layout .recommendations-side-stack .grid-card.rank-subsequent .card-meta-row {
+        flex: 1 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        min-width: 0 !important;
+        height: auto !important;
+        text-align: left !important;
+    }
+
+    /* Clean typography and text-clipping for rows */
+    #music-grid.ranked-recommendations-layout .recommendations-side-stack .grid-card.rank-subsequent .card-meta-row h4 {
+        font-size: 0.95rem !important;
+        font-weight: 500 !important;
+        line-height: 1.2 !important;
+        margin: 0 0 3px 0 !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+
+    #music-grid.ranked-recommendations-layout .recommendations-side-stack .grid-card.rank-subsequent .card-meta-row p {
+        font-size: 0.8rem !important;
+        color: rgba(255, 255, 255, 0.6) !important;
+        line-height: 1.2 !important;
+        margin: 0 !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+
+    /* Fine-tune top header sizing */
+    .app-header h1 {
+        font-size: 1.8rem !important;
+        margin-bottom: 4px !important;
+    }
+    
+    .app-header p {
+        font-size: 0.9rem !important;
+    }
+
+    /* Expand audio player full-width */
+    .audio-player-dock, .player-controls-container {
+        width: 100% !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        border-radius: 0 !important;
+        padding-bottom: calc(12px + env(safe-area-inset-bottom)) !important;
+    }
+}
