@@ -76,6 +76,7 @@
                             <h3>Artists</h3>
                             <span class="section-subtitle">Browse by artist</span>
                         </div>
+                        <div id="artists-status" class="section-status-text">Loading artists…</div>
                         <div id="artists-grid" class="music-grid"></div>
                     </section>
                 </div>
@@ -325,6 +326,10 @@
     </div>
 
     <script>
+        const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? '' 
+            : 'https://liquid-glass-6iuq.onrender.com/'; // <--- REPLACE THIS URL WITH YOUR LIVE HOST URL
+
         let currentPlaylist = []; 
         let recommendedPlaylist = []; 
         let playbackQueue = []; 
@@ -392,6 +397,7 @@
         const exportBtn = document.getElementById('export-playlists-btn');
         const importTriggerBtn = document.getElementById('import-trigger-btn');
         const importFileInput = document.getElementById('import-file-input');
+        const artistsStatus = document.getElementById('artists-status');
         const artistsGrid = document.getElementById('artists-grid');
         const artistDetailView = document.getElementById('artist-detail-view');
         const artistBackBtn = document.getElementById('artist-back-btn');
@@ -1064,7 +1070,7 @@
 
         function renderPlaylistsUI() {
             playlistsGrid.innerHTML = ""; const keys = Object.keys(playlists);
-            if (keys.length === 0) { playlistsGrid.innerHTML = "<p class='empty-msg'>No playlists created yet.</p>"; return; }
+            if (keys.length === 0) { playlistsGrid.innerHTML = "<p class='empty-msg'>No playlists created yet.</p>"; renderArtistGrid(); return; }
             keys.forEach(pName => {
                 let playlistObj = playlists[pName]; if (Array.isArray(playlistObj)) { playlists[pName] = { tracks: playlistObj, customArt: null }; playlistObj = playlists[pName]; }
                 const trackCount = playlistObj.tracks.length; const artworkUrl = getPlaylistArtworkUrl(playlistObj);
@@ -1078,10 +1084,13 @@
         function renderArtistGrid() {
             const artists = [...new Set(currentPlaylist.map(song => song.artist))].sort();
             artistsGrid.innerHTML = "";
+            if (!artistsStatus) return; 
             if (artists.length === 0) {
+                artistsStatus.innerText = "No artists available.";
                 artistsGrid.innerHTML = "<p class='empty-msg'>No artists available.</p>";
                 return;
             }
+            artistsStatus.innerText = `${artists.length} ${artists.length === 1 ? 'artist' : 'artists'} available.`;
             artists.forEach(artistName => {
                 const artistTracks = currentPlaylist.filter(track => track.artist === artistName);
                 const artUrl = getArtistArtworkUrlByArtist(artistName);
@@ -1355,7 +1364,10 @@
             })
             .catch((err) => { 
                 console.error(err);
-                document.getElementById('music-grid').innerHTML = "<p class='empty-msg'>Failed to connect to streaming loop.</p>"; 
+                document.getElementById('music-grid').innerHTML = "<p class='empty-msg'>Failed to connect to streaming loop.</p>";
+                if (artistsStatus) {
+                    artistsStatus.innerText = "Unable to load artists.";
+                }
             });
     </script>
 </body>

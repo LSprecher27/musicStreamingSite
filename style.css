@@ -429,6 +429,7 @@ body.music-is-playing .ambient-bg {
 .section-header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 .section-header-row h3 { margin: 0; }
 .section-subtitle { color: var(--text-muted); font-size: 0.95rem; }
+.section-status-text { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 14px; }
 .artists-section .grid-card { min-height: 170px; }
 .pill-btn.small { padding: 6px 14px; font-size: 0.8rem; }
 .card-actions-wrapper { display: flex; align-items: center; position: relative; margin-left: auto; }
